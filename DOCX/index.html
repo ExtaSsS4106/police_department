@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f3f6f4">
+  <title>basic_template_mobile_desctop | Установка и настройка</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --paper: #f3f6f4;
+      --surface: #ffffff;
+      --ink: #1d2b27;
+      --muted: #596a64;
+      --line: #dce5e0;
+      --green: #176b54;
+      --green-soft: #e5f2ec;
+      --amber: #81510a;
+      --amber-soft: #fff2d8;
+      --code: #182522;
+      --code-ink: #e6f0eb;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.65;
+      color: var(--ink);
+      background: var(--paper);
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; }
+    a { color: var(--green); text-underline-offset: 3px; }
+    .topbar { padding: 28px max(22px, calc((100vw - 1180px) / 2)); background: #193d32; color: #fff; }
+    .brand { margin: 0; font-size: 18px; font-weight: 700; }
+    .subtitle { margin: 5px 0 0; color: #c8ded4; font-size: 14px; }
+    .layout { width: min(1180px, calc(100% - 40px)); margin: 30px auto 70px; display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 28px; align-items: start; }
+    aside { position: sticky; top: 20px; padding: 20px; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; }
+    aside strong { display: block; margin-bottom: 12px; font-size: 13px; text-transform: uppercase; color: var(--muted); }
+    nav { display: grid; gap: 5px; }
+    nav a { padding: 6px 8px; border-radius: 5px; color: var(--ink); text-decoration: none; font-size: 14px; }
+    nav a:hover { background: var(--green-soft); color: var(--green); }
+    main { min-width: 0; padding: clamp(22px, 5vw, 54px); background: var(--surface); border: 1px solid var(--line); border-radius: 8px; }
+    h1 { margin: 0 0 12px; font-size: clamp(30px, 5vw, 44px); line-height: 1.14; }
+    h2 { margin: 46px 0 12px; padding-top: 8px; font-size: 25px; line-height: 1.25; }
+    h3 { margin: 26px 0 8px; font-size: 18px; }
+    p, ul, ol { margin-top: 9px; }
+    .lead { color: var(--muted); font-size: 18px; }
+    .summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 24px 0; }
+    .summary div { padding: 13px 15px; background: #f1f6f3; border-left: 3px solid var(--green); border-radius: 4px; }
+    .summary b { display: block; font-size: 14px; }
+    .summary span { color: var(--muted); font-size: 13px; }
+    .notice { margin: 18px 0; padding: 14px 17px; border-left: 4px solid var(--amber); background: var(--amber-soft); border-radius: 4px; }
+    .good { border-color: var(--green); background: var(--green-soft); }
+    pre { overflow-x: auto; margin: 12px 0 20px; padding: 17px; background: var(--code); color: var(--code-ink); border-radius: 6px; font: 13px/1.6 ui-monospace, SFMono-Regular, Consolas, monospace; }
+    code { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: .92em; overflow-wrap: anywhere; }
+    p code, li code { padding: 2px 5px; background: #edf2ef; border-radius: 3px; color: #173f33; }
+    table { width: 100%; border-collapse: collapse; margin: 15px 0; font-size: 14px; }
+    th, td { padding: 9px 10px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+    th { color: var(--muted); }
+    footer { margin-top: 48px; padding-top: 18px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; }
+    @media (max-width: 800px) {
+      .layout { grid-template-columns: 1fr; width: min(100% - 24px, 700px); margin-top: 14px; }
+      aside { position: static; }
+      nav { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      main { padding: 23px 18px; }
+      .summary { grid-template-columns: 1fr; }
+      h2 { margin-top: 36px; }
+    }
+    @media print {
+      :root { background: #fff; }
+      .topbar { padding: 12px 0; background: #fff; color: var(--ink); border-bottom: 2px solid var(--green); }
+      .subtitle { color: var(--muted); }
+      .layout { display: block; width: 100%; margin: 16px 0; }
+      aside { display: none; }
+      main { padding: 0; border: 0; }
+      pre { white-space: pre-wrap; }
+      h2 { break-after: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <p class="brand">basic_template_mobile_desctop / Документация</p>
+    <p class="subtitle">Установка, настройка API и сборка desktop и Android</p>
+  </header>
+  <div class="layout">
+    <aside>
+      <strong>На этой странице</strong>
+      <nav aria-label="Содержание">
+        <a href="#architecture">Структура</a>
+        <a href="#requirements">Требования</a>
+        <a href="#install">Установка</a>
+        <a href="#desktop">Desktop</a>
+        <a href="#api">API и сеть</a>
+        <a href="#android">Android APK</a>
+        <a href="#storage">Хранение</a>
+        <a href="#troubleshooting">Диагностика</a>
+      </nav>
+    </aside>
+    <main>
+      <h1>Установка и настройка basic_template_mobile_desctop</h1>
+      <p class="lead">Пошаговое руководство для разработки web-версии, запуска Electron и сборки Android-приложения с подключением к Django API.</p>
+      <div class="summary">
+        <div><b>Web assets</b><span><code>www/ → dist/</code> через Vite</span></div>
+        <div><b>Desktop</b><span>Electron entry: <code>electron/main.js</code></span></div>
+        <div><b>Android</b><span>Capacitor читает assets из <code>dist/</code></span></div>
+      </div>
+
+      <section id="architecture">
+        <h2>1. Структура проекта</h2>
+        <ul>
+          <li><code>www/</code> — исходные HTML, CSS и JavaScript.</li>
+          <li><code>templates/</code> — Nunjucks-шаблоны интерфейса.</li>
+          <li><code>build/precompile.js</code> — генерация <code>www/templates.js</code>.</li>
+          <li><code>vite.config.js</code> — сборка из <code>www/</code> в <code>dist/</code>.</li>
+          <li><code>electron/</code> — главное окно, preload-мост и IPC.</li>
+          <li><code>android/</code> — Android-проект Capacitor.</li>
+        </ul>
+        <div class="notice"><b>Важно:</b> Electron загружает <code>dist/index.html</code>. Android также копирует web assets из <code>dist/</code>. Поэтому после изменения исходников сначала собирайте проект.</div>
+      </section>
+
+      <section id="requirements">
+        <h2>2. Требования</h2>
+        <ul>
+          <li>Node.js 22 LTS и npm.</li>
+          <li>Для Android: JDK 17, Android Studio, Android SDK 36 и Platform Tools.</li>
+          <li>Для запуска на Linux: графическая сессия и системные библиотеки Electron.</li>
+          <li>Для сетевого API: backend на компьютере с LAN-доступом, портом 8080 и health endpoint <code>/api/ping/</code>.</li>
+        </ul>
+      </section>
+
+      <section id="install">
+        <h2>3. Установка зависимостей</h2>
+        <p>Откройте терминал в корне проекта — рядом с <code>package.json</code> — и выполните:</p>
+        <pre><code>npm install</code></pre>
+        <p>Если менялись зависимости или версии Node, повторите установку после проверки совместимости проекта.</p>
+      </section>
+
+      <section id="desktop">
+        <h2>4. Запуск и сборка desktop</h2>
+        <p>Обычный запуск собирает web-часть и открывает Electron:</p>
+        <pre><code>npm start</code></pre>
+        <p>Сборка отдельно, затем запуск Electron:</p>
+        <pre><code>npm run build
+electron .</code></pre>
+        <p>Сборка выполняет <code>node build/precompile.js</code>, затем Vite компилирует модули и CSS в <code>dist/</code>. При необходимости на Linux:</p>
+        <pre><code>npm run build
+electron --ozone-platform=x11 .</code></pre>
+        <p>Для web-разработки запустите Vite:</p>
+        <pre><code>npm run dev</code></pre>
+        <p>Откройте URL, который напечатает Vite, обычно <code>http://127.0.0.1:4173</code>. Эта команда запускает web-сервер, не Electron.</p>
+        <div class="notice"><b>Entry point:</b> <code>package.json</code> указывает на <code>electron/main.js</code>. Не запускайте корневой <code>main.js</code> вместо <code>electron .</code>.</div>
+      </section>
+
+      <section id="api">
+        <h2>5. Настройка API и локальной сети</h2>
+        <h3>Адрес backend</h3>
+        <p>Резервный адрес API задаётся в <code>www/index.html</code>:</p>
+        <pre><code>window.TASKFLOW_API_URL = 'http://192.168.1.180:8080/api';</code></pre>
+        <p>Замените IP на адрес компьютера с Django в локальной сети. На физическом телефоне <code>localhost</code> и <code>127.0.0.1</code> означают телефон, не компьютер.</p>
+        <p>В Electron сначала выполняется динамический поиск: <code>electron/main.js</code> получает адреса интерфейсов, сканирует кандидатов и проверяет <code>/api/ping/</code>. Android использует заданный резервный URL: Electron preload там недоступен.</p>
+        <h3>Запуск Django</h3>
+        <p>Слушайте внешний интерфейс, чтобы телефон мог подключиться:</p>
+        <pre><code>python manage.py runserver 0.0.0.0:8080</code></pre>
+        <p>Компьютер и телефон должны быть в одной сети; firewall должен пропускать входящие подключения к порту 8080. Проверка с телефона:</p>
+        <pre><code>http://&lt;LAN-IP&gt;:8080/api/ping/</code></pre>
+        <div class="notice good">Ожидаемый результат — HTTP 200 и, например, <code>{"message":"pong"}</code>. Убедитесь, что ping доступен без авторизации.</div>
+        <h3>CORS для Android WebView</h3>
+        <p>CORS настраивается в Django backend. Установите пакет:</p>
+        <pre><code>pip install django-cors-headers</code></pre>
+        <p>В <code>settings.py</code> добавьте приложение и middleware до <code>CommonMiddleware</code>:</p>
+        <pre><code>INSTALLED_APPS = [
+    'corsheaders',
+    # остальные приложения
+]
+
+MIDDLEWARE = [
+    'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    # остальные middleware
+]
+
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost',
+]</code></pre>
+        <p>В проекте указано <code>androidScheme: "http"</code>, поэтому Android origin обычно <code>http://localhost</code>. Если WebView сообщает другой Origin, разрешите именно его. После изменения настроек перезапустите backend. Preflight на login должен возвращать <code>Access-Control-Allow-Origin</code>.</p>
+        <p>Не используйте <code>CORS_ALLOW_ALL_ORIGINS = True</code> в production. Ограничьте также <code>ALLOWED_HOSTS</code>.</p>
+        <h3>HTTP / HTTPS</h3>
+        <p>Для локальной разработки включены <code>androidScheme: "http"</code> и <code>cleartext: true</code>. Это не production-конфигурация: для реального размещения используйте HTTPS.</p>
+      </section>
+
+      <section id="android">
+        <h2>6. Сборка Android APK</h2>
+        <p>Из корня проекта выполните:</p>
+        <pre><code>npm install
+npm run build
+npx cap sync android
+cd android
+./gradlew assembleDebug</code></pre>
+        <p>Debug APK появится здесь:</p>
+        <pre><code>android/app/build/outputs/apk/debug/app-debug.apk</code></pre>
+        <p>Установить на подключённый телефон:</p>
+        <pre><code>adb install -r android/app/build/outputs/apk/debug/app-debug.apk</code></pre>
+        <p>Или открыть Android Studio:</p>
+        <pre><code>npx cap open android</code></pre>
+        <div class="notice">После каждого изменения <code>www/</code> выполните <code>npm run build</code>, затем <code>npx cap sync android</code>, пересоберите APK и установите его заново. Capacitor копирует ресурсы из <code>dist/</code>.</div>
+        <p>В текущем проекте Capacitor настроены <code>webDir: "dist"</code>, <code>androidScheme: "http"</code> и <code>cleartext: true</code>.</p>
+        <h3>Release</h3>
+        <p>Для публикации создайте keystore и соберите подписанный APK/AAB через Android Studio. Не коммитьте keystore или пароли в репозиторий.</p>
+      </section>
+
+      <section id="storage">
+        <h2>7. Хранение токенов</h2>
+        <ul>
+          <li>Electron: preload API и зашифрованный файл <code>auth.json</code> в пользовательском каталоге Electron через <code>safeStorage</code>.</li>
+          <li>Android/iOS: <code>@aparajita/capacitor-secure-storage</code>.</li>
+          <li>Обычный браузер: <code>sessionStorage</code> как отладочный fallback.</li>
+        </ul>
+        <p>Общий адаптер этих вариантов находится в <code>www/auth-storage.js</code>.</p>
+      </section>
+
+      <section id="troubleshooting">
+        <h2>8. Диагностика</h2>
+        <h3>Electron показывает пустое окно</h3>
+        <ol>
+          <li>Запустите <code>npm start</code>, чтобы заново создать <code>dist/</code>.</li>
+          <li>Проверьте, что существует <code>dist/index.html</code>.</li>
+          <li>Откройте DevTools и проверьте Console.</li>
+          <li>Убедитесь, что запуск идёт через <code>electron .</code>, который использует entry point из <code>package.json</code>.</li>
+        </ol>
+        <h3>Android не соединяется с API</h3>
+        <ol>
+          <li>Проверьте LAN IP в <code>www/index.html</code>, а затем в <code>dist/index.html</code>.</li>
+          <li>Проверьте, что phone и backend доступны в одной сети и Django слушает <code>0.0.0.0:8080</code>.</li>
+          <li>Откройте ping endpoint непосредственно на телефоне.</li>
+          <li>Проверьте Android WebView CORS origin и заголовки ответа.</li>
+          <li>Выполните build, cap sync, Gradle build и установите свежий APK.</li>
+        </ol>
+        <h3>Изменения не появились на телефоне</h3>
+        <p>Изменение <code>www/</code> не меняет уже установленный APK. Повторите весь Android build flow. Устанавливайте именно файл <code>android/app/build/outputs/apk/debug/app-debug.apk</code>.</p>
+      </section>
+
+      <footer>
+        basic_template_mobile_desctop · локальная разработка и Android build · Подробная версия также находится в <code>DOCX/README.md</code>.
+      </footer>
+    </main>
+  </div>
+</body>
+</html>
