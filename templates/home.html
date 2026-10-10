@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid p-3 p-lg-4 d-flex flex-column gap-3" style="max-width:1200px;">
+
+    <!-- Поиск и действия -->
+    <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-body p-3 p-lg-4 d-flex flex-column gap-3">
+
+            <form id="carSearchForm" class="d-flex gap-2 flex-wrap" role="search">
+                <input id="carSearchInput" class="form-control" type="search"
+                       placeholder="Поиск: VIN, модель, год, цвет, статус"
+                       aria-label="Поиск по автопарку"
+                       autocomplete="off"
+                       value="{{ carsQuery }}">
+                <div class="d-flex gap-2">
+                    <button class="btn btn-outline-secondary" type="button" id="carSearchReset">Сбросить</button>
+                    <button class="btn btn-outline-primary" type="submit">
+                        <i class="bi bi-search me-1"></i>Найти
+                    </button>
+                </div>
+            </form>
+
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+                <div class="text-body-secondary small">
+                    Показано <span id="carsShown" class="fw-semibold text-body">{{ cars | length }}</span>
+                    из <span id="carsTotal" class="fw-semibold text-body">{{ allCars | length }}</span>
+                    {% if carsQuery %}
+                    <span class="badge text-bg-light border ms-2">фильтр: {{ carsQuery }}</span>
+                    {% endif %}
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button class="btn btn-outline-secondary btn-sm" type="button" id="carsRefresh"
+                            title="Обновить список">
+                        <i class="bi bi-arrow-clockwise"></i>
+                    </button>
+                    <button class="btn btn-primary" type="button"
+                            data-bs-toggle="modal" data-bs-target="#addCarModal">
+                        <i class="bi bi-plus-lg me-1"></i>Принять автомобиль
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Список автомобилей -->
+    <div id="carListWrap">
+        {% include "components/cars_list.html" %}
+    </div>
+
+</div>
+
+<!-- ==================== Модалка приёма автомобиля ==================== -->
+<div class="modal fade" id="addCarModal" tabindex="-1" aria-labelledby="addCarModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <form class="modal-content rounded-4" id="addCarForm" novalidate>
+
+            <div class="modal-header border-0 pb-0">
+                <h2 class="modal-title fs-5 fw-semibold" id="addCarModalLabel">
+                    <i class="bi bi-card-checklist me-2"></i>Принять автомобиль
+                </h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+            </div>
+
+            <div class="modal-body">
+                <!-- Ошибка сервера (дубль VIN и т.п.) -->
+                <div class="alert alert-danger d-none align-items-center gap-2 py-2 small"
+                     id="addCarAlert" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                    <div id="addCarAlertText"></div>
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-12">
+                        <label for="carVin" class="form-label">VIN</label>
+                        <input class="form-control font-monospace" id="carVin" name="vin"
+                               maxlength="17" placeholder="17 символов"
+                               autocomplete="off" autocapitalize="characters" required>
+                        <div class="form-text">Строго 17 символов: буквы (кроме I, O, Q) и цифры.</div>
+                    </div>
+
+                    <div class="col-12">
+                        <label for="carModel" class="form-label">Модель</label>
+                        <input class="form-control" id="carModel" name="model"
+                               maxlength="50" placeholder="Toyota Camry" autocomplete="off" required>
+                    </div>
+
+                    <div class="col-12 col-sm-6">
+                        <label for="carYear" class="form-label">Год выпуска</label>
+                        <input class="form-control" id="carYear" name="year" type="number"
+                               min="1900" max="2100" step="1" placeholder="2020">
+                    </div>
+
+                    <div class="col-12 col-sm-6">
+                        <label for="carColor" class="form-label">Цвет</label>
+                        <input class="form-control" id="carColor" name="color"
+                               maxlength="30" placeholder="Белый" autocomplete="off">
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer border-0 pt-0">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Отмена</button>
+                <button type="submit" class="btn btn-primary" id="addCarSubmit">
+                    <span class="spinner-border spinner-border-sm me-2 d-none"
+                          id="addCarSpinner" role="status" aria-hidden="true"></span>
+                    <i class="bi bi-check-lg me-1" id="addCarIcon"></i>
+                    Принять
+                </button>
+            </div>
+
+        </form>
+    </div>
+</div>
+{% endblock %}

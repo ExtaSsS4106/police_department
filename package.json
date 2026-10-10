@@ -1,0 +1,25 @@
+{
+  "name": "basic_template_mobile_desctop",
+  "version": "1.0.0",
+  "main": "electron/main.js",
+  "scripts": {
+    "build": "node build/precompile.js && vite build",
+    "precompile": "node build/precompile.js",
+    "start": "npm run build && electron .",
+    "dev": "node build/precompile.js && vite --host 127.0.0.1 --port 4173",
+    "test": "node build/smoke-templates.js",
+    "test:runtime": "npm run build && node build/smoke-runtime.mjs"
+  },
+  "dependencies": {
+    "@aparajita/capacitor-secure-storage": "^8.0.1",
+    "@capacitor/android": "^8.5.2",
+    "@capacitor/core": "^8.5.2",
+    "nunjucks": "^3.2.4"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^8.5.2",
+    "electron": "^33.0.0",
+    "serve": "^14.2.6",
+    "vite": "^8.3.2"
+  }
+}
