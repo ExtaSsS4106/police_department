@@ -1,8 +1,4 @@
-// Автомобили: загрузка, поиск, приём и списание.
-// Контракт с сервером (api/urls.py):
-//   GET  /api/GetCars/    -> [{car_id, vin, model, year, color, status, img, created_at}]
-//   POST /api/AcceptCar/  {vin, model, year?, color?} -> 201
-//   POST /api/DeleteCar/  {car_id} -> 200 (car.status = 'sold')
+
 
 import { data } from "../conf/state.js";
 import { authenticatedRequest } from "../conf/api.js";
