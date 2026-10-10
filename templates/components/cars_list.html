@@ -1,21 +1,74 @@
-{% for car in cars %}
-    <div class="col">
+{# Сетка автомобилей. Используется и как {% include %} в home.html,
+   и как partial через window.renderPage('components/cars_list.html', data). #}
+{% if carsLoading %}
+<div class="d-flex flex-column align-items-center justify-content-center text-body-secondary py-5">
+    <div class="spinner-border mb-3" role="status" aria-hidden="true"></div>
+    <div class="small">Загружаем автомобили…</div>
+</div>
+
+{% elif carsError %}
+<div class="alert alert-danger d-flex align-items-center gap-2 mb-0" role="alert">
+    <i class="bi bi-exclamation-triangle-fill"></i>
+    <div>{{ carsError }}</div>
+</div>
+
+{% elif cars | length == 0 %}
+<div class="card border-0 shadow-sm rounded-4">
+    <div class="card-body text-center text-body-secondary py-5">
+        <i class="bi bi-car-front fs-1 d-block mb-3"></i>
+        {% if carsQuery %}
+        По запросу «{{ carsQuery }}» автомобилей не найдено.
+        {% else %}
+        В автопарке пока нет автомобилей — нажмите «Принять автомобиль».
+        {% endif %}
+    </div>
+</div>
+
+{% else %}
+<div class="row g-3">
+    {% for car in cars %}
+    <div class="col-12 col-md-6 col-xl-4">
         <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden">
-            <img src="/media/cars/example.jpg" alt="Toyota Camry" class="w-100 object-fit-cover bg-secondary-subtle" style="aspect-ratio:16/10;">
+
+            {% if car.img %}
+            <img src="{{ car.img }}" alt="{{ car.model }}"
+                 class="w-100 object-fit-cover bg-secondary-subtle" style="aspect-ratio:16/10;">
+            {% else %}
+            <div class="d-flex align-items-center justify-content-center bg-secondary-subtle text-secondary"
+                 style="aspect-ratio:16/10;">
+                <i class="bi bi-car-front" style="font-size:3rem;"></i>
+            </div>
+            {% endif %}
+
             <div class="card-body">
-                <h3 class="h6 fw-bold mb-1">{{ car.model }}</h3>
-                <div class="text-body-secondary small mb-2">{{ car.vin }}</div>
+                <div class="d-flex justify-content-between align-items-start gap-2">
+                    <h3 class="h6 fw-bold mb-1 min-w-0">{{ car.model }}</h3>
+                    {% if car.sold %}
+                    <span class="badge text-bg-danger flex-shrink-0">Списана</span>
+                    {% else %}
+                    <span class="badge text-bg-success flex-shrink-0">На учёте</span>
+                    {% endif %}
+                </div>
+
+                <div class="text-body-secondary small font-monospace mb-2">{{ car.vin }}</div>
+
                 <div class="d-flex flex-wrap gap-2">
-                    <span class="badge text-bg-secondary">{{ car.year }}</span>
-                    <span class="badge text-bg-light border">{{ car.color }}</span>
+                    {% if car.year %}<span class="badge text-bg-secondary">{{ car.year }}</span>{% endif %}
+                    {% if car.color %}<span class="badge text-bg-light border">{{ car.color }}</span>{% endif %}
                 </div>
             </div>
+
             <div class="card-footer bg-transparent border-0 pt-0 pb-3 d-flex gap-2">
-                
-                <button class="btn btn-sm btn-outline-danger" type="button" data-bs-toggle="modal" data-bs-target="#delete-1" aria-label="Списать">
-                    <i class="bi bi-trash"></i>
+                {% if not car.sold %}
+                <button class="btn btn-sm btn-outline-danger" type="button"
+                        data-sell-car="{{ car.car_id }}" title="Списать автомобиль">
+                    <i class="bi bi-trash me-1"></i>Списать
                 </button>
+                {% endif %}
             </div>
+
         </div>
     </div>
-{% endfor %}
+    {% endfor %}
+</div>
+{% endif %}

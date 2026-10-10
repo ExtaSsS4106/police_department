@@ -1,5 +1,4 @@
-// innerHTML не исполняет <script> — пересоздаём их, чтобы браузер запустил
-import { routes, titles, PUBLIC_ROUTES } from "./routing.js";
+import { routes, titles, PUBLIC_ROUTES, ADMIN_ROUTES } from "./routing.js";
 import { data, authReady, startupError, authenticated } from "./state.js";
 let lastRender = '';
 let pendingRender = 0;
@@ -14,7 +13,6 @@ export function rehydrateScripts(root) {
     });
 }
 
-// Старые инстансы Bootstrap-модалок внутри #root + бэкдропы и блокировка скролла
 export function disposeModals(root) {
     const B = window.bootstrap;
     if (B) {
@@ -36,8 +34,7 @@ export function getCurrentPath() {
     return location.pathname || '/';
 }
 
-// authReady/startupError/data приходят из state.js как live-биндинги:
-// render() дергается и из hashchange/popstate, где передавать их аргументами нельзя.
+
 export function render(force = false) {
     if (pendingRender) {
         cancelAnimationFrame(pendingRender);
@@ -48,25 +45,26 @@ export function render(force = false) {
     const path = getCurrentPath();
     const isPublic = PUBLIC_ROUTES.includes(path);
 
-    // Не авторизован и маршрут не публичный → на вход
     if (!authenticated && !isPublic) {
         redirect('/login');
         return;
     }
 
-    // Авторизован и застряли на входной/регистрации → на главную
     if (authenticated && isPublic) {
         redirect('/');
         return;
     }
 
-    // Нормализуем URL: чистый pathname приводим к hash-роуту #/
+    if (ADMIN_ROUTES.includes(path) && !data.isAdmin) {
+        redirect('/');
+        return;
+    }
+
     if (!location.hash) {
         location.hash = '#/';
         return;
     }
 
-    // Неизвестный маршрут → на главную (иначе nunjucks упадёт на отсутствующем шаблоне)
     if (!routes[path]) {
         redirect('/');
         return;
@@ -77,6 +75,7 @@ export function render(force = false) {
     lastRender = key;
 
     data.title = titles[path] || data.appName;
+    data.path = path;                      
     document.title = `${data.title} — ${data.appName}`;
 
     const root = document.getElementById('root');
@@ -86,7 +85,6 @@ export function render(force = false) {
     root.innerHTML = window.renderPage(template, data);
     rehydrateScripts(root);
 
-    // Ошибка старта (нет соединения с API) — показываем на странице входа
     if (isPublic && path.includes('login') && startupError) {
         const alert = root.querySelector('#nonFieldAlert');
         const text = root.querySelector('#nonFieldText');

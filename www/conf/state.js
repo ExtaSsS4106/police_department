@@ -1,26 +1,34 @@
+
+
 import { auth } from "../auth-storage.js";
 
 
-// Общее состояние приложения.
-// Вынесено в отдельный модуль, потому что render.js должен видеть `data`,
-// а app.js — не может просто прокинуть его аргументом: render() вызывается
-// ещё и из hashchange/popstate, где аргументов нет. Флаги тут же — чтобы
-// guard "ещё не инициализировано" проверял состояние, а не параметр вызова.
-
-// Единственный объект, который видят шаблоны Nunjucks (renderPage(name, data)).
-// Сюда складываем только то, что реально нужно на страницах.
 export const data = {
-    appName: 'Template',
+    appName: 'Police Department',
     title: 'Главная',
+    path: '/',            
+
     authenticated: false,
-    user: {},
+    isAdmin: false,        
+    user: {},              
+
     cars: [],
+    allCars: [],
+    carsQuery: '',
+    carsLoading: false,
+    carsLoaded: false,
+    carsError: '',
+
+    users: [],
+    allUsers: [],
+    usersQuery: '',
+    usersLoading: false,
+    usersLoaded: false,
+    usersError: '',
 };
 
-// true после того, как initialize() восстановил сессию (или убедился, что её нет).
 export let authReady = false;
 
-// Ошибка старта (например, API недоступен) — показывается на странице входа.
 export let startupError = '';
 
 export function markAuthReady() {
@@ -30,16 +38,37 @@ export function markAuthReady() {
 export function setStartupError(message) {
     startupError = message;
 }
+
 export let authenticated;
-export function set_authenticated(value){
+export function set_authenticated(value) {
     authenticated = value;
 }
 
 export let tokens = null;
-export function setTokens(value){
+export function setTokens(value) {
     tokens = value;
 }
 
+
+export function resetSessionData() {
+    data.authenticated = false;
+    data.isAdmin = false;
+    data.user = {};
+
+    data.cars = [];
+    data.allCars = [];
+    data.carsQuery = '';
+    data.carsLoading = false;
+    data.carsLoaded = false;
+    data.carsError = '';
+
+    data.users = [];
+    data.allUsers = [];
+    data.usersQuery = '';
+    data.usersLoading = false;
+    data.usersLoaded = false;
+    data.usersError = '';
+}
 
 export async function readTokens() {
     return auth.load();

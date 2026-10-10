@@ -292,6 +292,221 @@ root: root
 })();
 })();
 
+(function() {(window.nunjucksPrecompiled = window.nunjucksPrecompiled || {})["components/cars_list.html"] = (function() {
+function root(env, context, frame, runtime, cb) {
+var lineno = 0;
+var colno = 0;
+var output = "";
+try {
+var parentTemplate = null;
+output += "\n";
+if(runtime.contextOrFrameLookup(context, frame, "carsLoading")) {
+output += "\n<div class=\"d-flex flex-column align-items-center justify-content-center text-body-secondary py-5\">\n    <div class=\"spinner-border mb-3\" role=\"status\" aria-hidden=\"true\"></div>\n    <div class=\"small\">Загружаем автомобили…</div>\n</div>\n\n";
+;
+}
+else {
+if(runtime.contextOrFrameLookup(context, frame, "carsError")) {
+output += "\n<div class=\"alert alert-danger d-flex align-items-center gap-2 mb-0\" role=\"alert\">\n    <i class=\"bi bi-exclamation-triangle-fill\"></i>\n    <div>";
+output += runtime.suppressValue(runtime.contextOrFrameLookup(context, frame, "carsError"), env.opts.autoescape);
+output += "</div>\n</div>\n\n";
+;
+}
+else {
+if(env.getFilter("length").call(context, runtime.contextOrFrameLookup(context, frame, "cars")) == 0) {
+output += "\n<div class=\"card border-0 shadow-sm rounded-4\">\n    <div class=\"card-body text-center text-body-secondary py-5\">\n        <i class=\"bi bi-car-front fs-1 d-block mb-3\"></i>\n        ";
+if(runtime.contextOrFrameLookup(context, frame, "carsQuery")) {
+output += "\n        По запросу «";
+output += runtime.suppressValue(runtime.contextOrFrameLookup(context, frame, "carsQuery"), env.opts.autoescape);
+output += "» автомобилей не найдено.\n        ";
+;
+}
+else {
+output += "\n        В автопарке пока нет автомобилей — нажмите «Принять автомобиль».\n        ";
+;
+}
+output += "\n    </div>\n</div>\n\n";
+;
+}
+else {
+output += "\n<div class=\"row g-3\">\n    ";
+frame = frame.push();
+var t_3 = runtime.contextOrFrameLookup(context, frame, "cars");
+if(t_3) {t_3 = runtime.fromIterator(t_3);
+var t_2 = t_3.length;
+for(var t_1=0; t_1 < t_3.length; t_1++) {
+var t_4 = t_3[t_1];
+frame.set("car", t_4);
+frame.set("loop.index", t_1 + 1);
+frame.set("loop.index0", t_1);
+frame.set("loop.revindex", t_2 - t_1);
+frame.set("loop.revindex0", t_2 - t_1 - 1);
+frame.set("loop.first", t_1 === 0);
+frame.set("loop.last", t_1 === t_2 - 1);
+frame.set("loop.length", t_2);
+output += "\n    <div class=\"col-12 col-md-6 col-xl-4\">\n        <div class=\"card h-100 border-0 shadow-sm rounded-4 overflow-hidden\">\n\n            ";
+if(runtime.memberLookup((t_4),"img")) {
+output += "\n            <img src=\"";
+output += runtime.suppressValue(runtime.memberLookup((t_4),"img"), env.opts.autoescape);
+output += "\" alt=\"";
+output += runtime.suppressValue(runtime.memberLookup((t_4),"model"), env.opts.autoescape);
+output += "\"\n                 class=\"w-100 object-fit-cover bg-secondary-subtle\" style=\"aspect-ratio:16/10;\">\n            ";
+;
+}
+else {
+output += "\n            <div class=\"d-flex align-items-center justify-content-center bg-secondary-subtle text-secondary\"\n                 style=\"aspect-ratio:16/10;\">\n                <i class=\"bi bi-car-front\" style=\"font-size:3rem;\"></i>\n            </div>\n            ";
+;
+}
+output += "\n\n            <div class=\"card-body\">\n                <div class=\"d-flex justify-content-between align-items-start gap-2\">\n                    <h3 class=\"h6 fw-bold mb-1 min-w-0\">";
+output += runtime.suppressValue(runtime.memberLookup((t_4),"model"), env.opts.autoescape);
+output += "</h3>\n                    ";
+if(runtime.memberLookup((t_4),"sold")) {
+output += "\n                    <span class=\"badge text-bg-danger flex-shrink-0\">Списана</span>\n                    ";
+;
+}
+else {
+output += "\n                    <span class=\"badge text-bg-success flex-shrink-0\">На учёте</span>\n                    ";
+;
+}
+output += "\n                </div>\n\n                <div class=\"text-body-secondary small font-monospace mb-2\">";
+output += runtime.suppressValue(runtime.memberLookup((t_4),"vin"), env.opts.autoescape);
+output += "</div>\n\n                <div class=\"d-flex flex-wrap gap-2\">\n                    ";
+if(runtime.memberLookup((t_4),"year")) {
+output += "<span class=\"badge text-bg-secondary\">";
+output += runtime.suppressValue(runtime.memberLookup((t_4),"year"), env.opts.autoescape);
+output += "</span>";
+;
+}
+output += "\n                    ";
+if(runtime.memberLookup((t_4),"color")) {
+output += "<span class=\"badge text-bg-light border\">";
+output += runtime.suppressValue(runtime.memberLookup((t_4),"color"), env.opts.autoescape);
+output += "</span>";
+;
+}
+output += "\n                </div>\n            </div>\n\n            <div class=\"card-footer bg-transparent border-0 pt-0 pb-3 d-flex gap-2\">\n                ";
+if(!runtime.memberLookup((t_4),"sold")) {
+output += "\n                <button class=\"btn btn-sm btn-outline-danger\" type=\"button\"\n                        data-sell-car=\"";
+output += runtime.suppressValue(runtime.memberLookup((t_4),"car_id"), env.opts.autoescape);
+output += "\" title=\"Списать автомобиль\">\n                    <i class=\"bi bi-trash me-1\"></i>Списать\n                </button>\n                ";
+;
+}
+output += "\n            </div>\n\n        </div>\n    </div>\n    ";
+;
+}
+}
+frame = frame.pop();
+output += "\n</div>\n";
+;
+}
+;
+}
+;
+}
+output += "\n";
+if(parentTemplate) {
+parentTemplate.rootRenderFunc(env, context, frame, runtime, cb);
+} else {
+cb(null, output);
+}
+;
+} catch (e) {
+  cb(runtime.handleError(e, lineno, colno));
+}
+}
+return {
+root: root
+};
+
+})();
+})();
+
+(function() {(window.nunjucksPrecompiled = window.nunjucksPrecompiled || {})["components/users_list.html"] = (function() {
+function root(env, context, frame, runtime, cb) {
+var lineno = 0;
+var colno = 0;
+var output = "";
+try {
+var parentTemplate = null;
+output += "\n";
+if(runtime.contextOrFrameLookup(context, frame, "usersLoading")) {
+output += "\n<div class=\"d-flex flex-column align-items-center justify-content-center text-body-secondary py-5\">\n    <div class=\"spinner-border mb-3\" role=\"status\" aria-hidden=\"true\"></div>\n    <div class=\"small\">Загружаем пользователей…</div>\n</div>\n\n";
+;
+}
+else {
+if(runtime.contextOrFrameLookup(context, frame, "usersError")) {
+output += "\n<div class=\"alert alert-danger d-flex align-items-center gap-2 mb-0\" role=\"alert\">\n    <i class=\"bi bi-exclamation-triangle-fill\"></i>\n    <div>";
+output += runtime.suppressValue(runtime.contextOrFrameLookup(context, frame, "usersError"), env.opts.autoescape);
+output += "</div>\n</div>\n\n";
+;
+}
+else {
+if(env.getFilter("length").call(context, runtime.contextOrFrameLookup(context, frame, "users")) == 0) {
+output += "\n<div class=\"card border-0 shadow-sm rounded-4\">\n    <div class=\"card-body text-center text-body-secondary py-5\">\n        <i class=\"bi bi-people fs-1 d-block mb-3\"></i>\n        ";
+if(runtime.contextOrFrameLookup(context, frame, "usersQuery")) {
+output += "\n        Пользователей с логином «";
+output += runtime.suppressValue(runtime.contextOrFrameLookup(context, frame, "usersQuery"), env.opts.autoescape);
+output += "» не найдено.\n        ";
+;
+}
+else {
+output += "\n        Пользователей пока нет.\n        ";
+;
+}
+output += "\n    </div>\n</div>\n\n";
+;
+}
+else {
+output += "\n<div class=\"card border-0 shadow-sm rounded-4\">\n    <div class=\"table-responsive\">\n        <table class=\"table table-hover align-middle mb-0\">\n            <thead class=\"table-light\">\n                <tr>\n                    <th scope=\"col\" style=\"width:90px;\">ID</th>\n                    <th scope=\"col\">Логин</th>\n                    <th scope=\"col\" style=\"width:140px;\">ID пользователя</th>\n                </tr>\n            </thead>\n            <tbody>\n                ";
+frame = frame.push();
+var t_3 = runtime.contextOrFrameLookup(context, frame, "users");
+if(t_3) {t_3 = runtime.fromIterator(t_3);
+var t_2 = t_3.length;
+for(var t_1=0; t_1 < t_3.length; t_1++) {
+var t_4 = t_3[t_1];
+frame.set("row", t_4);
+frame.set("loop.index", t_1 + 1);
+frame.set("loop.index0", t_1);
+frame.set("loop.revindex", t_2 - t_1);
+frame.set("loop.revindex0", t_2 - t_1 - 1);
+frame.set("loop.first", t_1 === 0);
+frame.set("loop.last", t_1 === t_2 - 1);
+frame.set("loop.length", t_2);
+output += "\n                <tr>\n                    <td class=\"text-body-secondary\">";
+output += runtime.suppressValue(runtime.memberLookup((t_4),"profile_id"), env.opts.autoescape);
+output += "</td>\n                    <td class=\"fw-semibold\">\n                        <i class=\"bi bi-person-circle me-2 text-body-secondary\"></i>";
+output += runtime.suppressValue(runtime.memberLookup((t_4),"username"), env.opts.autoescape);
+output += "\n                    </td>\n                    <td class=\"text-body-secondary\">";
+output += runtime.suppressValue(runtime.memberLookup((t_4),"user_id"), env.opts.autoescape);
+output += "</td>\n                </tr>\n                ";
+;
+}
+}
+frame = frame.pop();
+output += "\n            </tbody>\n        </table>\n    </div>\n</div>\n";
+;
+}
+;
+}
+;
+}
+output += "\n";
+if(parentTemplate) {
+parentTemplate.rootRenderFunc(env, context, frame, runtime, cb);
+} else {
+cb(null, output);
+}
+;
+} catch (e) {
+  cb(runtime.handleError(e, lineno, colno));
+}
+}
+return {
+root: root
+};
+
+})();
+})();
+
 (function() {(window.nunjucksPrecompiled = window.nunjucksPrecompiled || {})["home.html"] = (function() {
 function root(env, context, frame, runtime, cb) {
 var lineno = 0;
@@ -326,9 +541,42 @@ var colno = 3;
 var output = "";
 try {
 var frame = frame.push(true);
-output += "\n<main class=\"flex-grow-1 overflow-hidden\" style=\"min-height: 70vh;\">\n    <div class=\"container-fluid p-3 p-lg-4 d-flex flex-column gap-3\" style=\"max-width:1100px;\">\n\n        <div class=\"d-flex gap-1 flex-column px-4 py-4 card border-0 shadow-sm rounded-4\" style=\"min-height: 100px;\">\n            <div class=\"d-flex\" role=\"search\">\n                <input id=\"search-input\" class=\"form-control me-2\" type=\"search\" placeholder=\"Search\" aria-label=\"Search\"/>\n                <button class=\"btn btn-outline-success\" type=\"submit\">Search</button>\n            </div>\n            <div class=\"d-flex flex-wrap\">\n                <div class=\"dropdown\">\n                    <button id=\"btn-stack\" class=\"btn btn-outline-secondary dropdown-toggle\" type=\"button\" data-bs-toggle=\"dropdown\" aria-expanded=\"false\">\n                        Все\n                    </button>\n                    <ul id=\"btns-stack\" class=\"dropdown-menu\">\n                        <li><button data-stack-type=\"all\" class=\"dropdown-item\" type=\"button\">Все</button></li>\n                        <li><button data-stack-type=\"mobile\" class=\"dropdown-item\" type=\"button\">Мобилки</button></li>\n                        <li><button data-stack-type=\"server\" class=\"dropdown-item\" type=\"button\">Сервер</button></li>\n                        <li><button data-stack-type=\"desctop\" class=\"dropdown-item\" type=\"button\">Десктоп</button></li>\n                    </ul>\n                </div>\n            </div>\n        </div>\n\n        <div class=\"card border-0 shadow-sm rounded-4\">\n            <div class=\"card-header bg-transparent border-bottom d-flex justify-content-between align-items-center\">\n                <h2 class=\"h6 fw-bold mb-0\">\n                    <i class=\"bi bi-link-45deg me-2 text-primary\"></i>Ссылки\n                </h2>\n            </div>\n            <div class=\"col\">\n                <div class=\"card h-100 border-0 shadow-sm rounded-4 overflow-hidden\">\n                    <img src=\"/media/cars/example.jpg\" alt=\"Toyota Camry\" class=\"w-100 object-fit-cover bg-secondary-subtle\" style=\"aspect-ratio:16/10;\">\n\n                    <div class=\"card-body\">\n\n                        <h3 class=\"h6 fw-bold mb-1\">Toyota Camry</h3>\n                        <div class=\"text-body-secondary small mb-2\">VIN JTNB11HK103000001</div>\n                        <div class=\"d-flex flex-wrap gap-2\">\n                            <span class=\"badge text-bg-secondary\">2021</span>\n                            <span class=\"badge text-bg-light border\">Чёрный</span>\n                        </div>\n                    </div>\n                    <div class=\"card-footer bg-transparent border-0 pt-0 pb-3 d-flex gap-2\">\n                        <button class=\"btn btn-sm btn-outline-primary flex-grow-1\" type=\"button\" data-bs-toggle=\"modal\" data-bs-target=\"#info-1\">\n                            <i class=\"bi bi-info-circle me-1\"></i>Инфо\n                        </button>\n                        <button class=\"btn btn-sm btn-outline-danger\" type=\"button\" data-bs-toggle=\"modal\" data-bs-target=\"#delete-1\" aria-label=\"Списать\">\n                            <i class=\"bi bi-trash\"></i>\n                        </button>\n                    </div>\n                </div>\n            </div>\n\n        </div>\n    </div>\n</main>\n";
-cb(null, output);
+output += "\n<div class=\"container-fluid p-3 p-lg-4 d-flex flex-column gap-3\" style=\"max-width:1200px;\">\n\n    <!-- Поиск и действия -->\n    <div class=\"card border-0 shadow-sm rounded-4\">\n        <div class=\"card-body p-3 p-lg-4 d-flex flex-column gap-3\">\n\n            <form id=\"carSearchForm\" class=\"d-flex gap-2 flex-wrap\" role=\"search\">\n                <input id=\"carSearchInput\" class=\"form-control\" type=\"search\"\n                       placeholder=\"Поиск: VIN, модель, год, цвет, статус\"\n                       aria-label=\"Поиск по автопарку\"\n                       autocomplete=\"off\"\n                       value=\"";
+output += runtime.suppressValue(runtime.contextOrFrameLookup(context, frame, "carsQuery"), env.opts.autoescape);
+output += "\">\n                <div class=\"d-flex gap-2\">\n                    <button class=\"btn btn-outline-secondary\" type=\"button\" id=\"carSearchReset\">Сбросить</button>\n                    <button class=\"btn btn-outline-primary\" type=\"submit\">\n                        <i class=\"bi bi-search me-1\"></i>Найти\n                    </button>\n                </div>\n            </form>\n\n            <div class=\"d-flex flex-wrap justify-content-between align-items-center gap-2\">\n                <div class=\"text-body-secondary small\">\n                    Показано <span id=\"carsShown\" class=\"fw-semibold text-body\">";
+output += runtime.suppressValue(env.getFilter("length").call(context, runtime.contextOrFrameLookup(context, frame, "cars")), env.opts.autoescape);
+output += "</span>\n                    из <span id=\"carsTotal\" class=\"fw-semibold text-body\">";
+output += runtime.suppressValue(env.getFilter("length").call(context, runtime.contextOrFrameLookup(context, frame, "allCars")), env.opts.autoescape);
+output += "</span>\n                    ";
+if(runtime.contextOrFrameLookup(context, frame, "carsQuery")) {
+output += "\n                    <span class=\"badge text-bg-light border ms-2\">фильтр: ";
+output += runtime.suppressValue(runtime.contextOrFrameLookup(context, frame, "carsQuery"), env.opts.autoescape);
+output += "</span>\n                    ";
 ;
+}
+output += "\n                </div>\n\n                <div class=\"d-flex gap-2\">\n                    <button class=\"btn btn-outline-secondary btn-sm\" type=\"button\" id=\"carsRefresh\"\n                            title=\"Обновить список\">\n                        <i class=\"bi bi-arrow-clockwise\"></i>\n                    </button>\n                    <button class=\"btn btn-primary\" type=\"button\"\n                            data-bs-toggle=\"modal\" data-bs-target=\"#addCarModal\">\n                        <i class=\"bi bi-plus-lg me-1\"></i>Принять автомобиль\n                    </button>\n                </div>\n            </div>\n\n        </div>\n    </div>\n\n    <!-- Список автомобилей -->\n    <div id=\"carListWrap\">\n        ";
+var tasks = [];
+tasks.push(
+function(callback) {
+env.getTemplate("components/cars_list.html", false, "home.html", false, function(t_7,t_6) {
+if(t_7) { cb(t_7); return; }
+callback(null,t_6);});
+});
+tasks.push(
+function(template, callback){
+template.render(context.getVariables(), frame, function(t_9,t_8) {
+if(t_9) { cb(t_9); return; }
+callback(null,t_8);});
+});
+tasks.push(
+function(result, callback){
+output += result;
+callback(null);
+});
+env.waterfall(tasks, function(){
+output += "\n    </div>\n\n</div>\n\n<!-- ==================== Модалка приёма автомобиля ==================== -->\n<div class=\"modal fade\" id=\"addCarModal\" tabindex=\"-1\" aria-labelledby=\"addCarModalLabel\" aria-hidden=\"true\">\n    <div class=\"modal-dialog modal-dialog-centered\">\n        <form class=\"modal-content rounded-4\" id=\"addCarForm\" novalidate>\n\n            <div class=\"modal-header border-0 pb-0\">\n                <h2 class=\"modal-title fs-5 fw-semibold\" id=\"addCarModalLabel\">\n                    <i class=\"bi bi-card-checklist me-2\"></i>Принять автомобиль\n                </h2>\n                <button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"modal\" aria-label=\"Закрыть\"></button>\n            </div>\n\n            <div class=\"modal-body\">\n                <!-- Ошибка сервера (дубль VIN и т.п.) -->\n                <div class=\"alert alert-danger d-none align-items-center gap-2 py-2 small\"\n                     id=\"addCarAlert\" role=\"alert\">\n                    <i class=\"bi bi-exclamation-triangle-fill\"></i>\n                    <div id=\"addCarAlertText\"></div>\n                </div>\n\n                <div class=\"row g-3\">\n                    <div class=\"col-12\">\n                        <label for=\"carVin\" class=\"form-label\">VIN</label>\n                        <input class=\"form-control font-monospace\" id=\"carVin\" name=\"vin\"\n                               maxlength=\"17\" placeholder=\"17 символов\"\n                               autocomplete=\"off\" autocapitalize=\"characters\" required>\n                        <div class=\"form-text\">Строго 17 символов: буквы (кроме I, O, Q) и цифры.</div>\n                    </div>\n\n                    <div class=\"col-12\">\n                        <label for=\"carModel\" class=\"form-label\">Модель</label>\n                        <input class=\"form-control\" id=\"carModel\" name=\"model\"\n                               maxlength=\"50\" placeholder=\"Toyota Camry\" autocomplete=\"off\" required>\n                    </div>\n\n                    <div class=\"col-12 col-sm-6\">\n                        <label for=\"carYear\" class=\"form-label\">Год выпуска</label>\n                        <input class=\"form-control\" id=\"carYear\" name=\"year\" type=\"number\"\n                               min=\"1900\" max=\"2100\" step=\"1\" placeholder=\"2020\">\n                    </div>\n\n                    <div class=\"col-12 col-sm-6\">\n                        <label for=\"carColor\" class=\"form-label\">Цвет</label>\n                        <input class=\"form-control\" id=\"carColor\" name=\"color\"\n                               maxlength=\"30\" placeholder=\"Белый\" autocomplete=\"off\">\n                    </div>\n                </div>\n            </div>\n\n            <div class=\"modal-footer border-0 pt-0\">\n                <button type=\"button\" class=\"btn btn-outline-secondary\" data-bs-dismiss=\"modal\">Отмена</button>\n                <button type=\"submit\" class=\"btn btn-primary\" id=\"addCarSubmit\">\n                    <span class=\"spinner-border spinner-border-sm me-2 d-none\"\n                          id=\"addCarSpinner\" role=\"status\" aria-hidden=\"true\"></span>\n                    <i class=\"bi bi-check-lg me-1\" id=\"addCarIcon\"></i>\n                    Принять\n                </button>\n            </div>\n\n        </form>\n    </div>\n</div>\n";
+cb(null, output);
+});
 } catch (e) {
   cb(runtime.handleError(e, lineno, colno));
 }
@@ -348,15 +596,47 @@ var colno = 0;
 var output = "";
 try {
 var parentTemplate = null;
-output += "<nav class=\"navbar navbar-expand-lg bg-body-tertiary border-bottom sticky-top px-3 px-lg-4\">\n    <div class=\"container-fluid px-3 px-lg-4\">\n\n        <!-- ЛОГО -->\n        <a class=\"navbar-brand fw-bold d-flex align-items-center gap-2 me-auto me-lg-0\" href=\"#/\">\n            <span class=\"d-inline-flex align-items-center justify-content-center bg-primary text-white rounded-3\"\n                  style=\"width:32px;height:32px;\">\n                <i class=\"bi bi-kanban\"></i>\n            </span>\n            <span>";
+output += "<nav class=\"navbar navbar-expand-lg bg-body-tertiary border-bottom sticky-top px-3 px-lg-4\">\n    <div class=\"container-fluid px-3 px-lg-4\">\n\n        <!-- ЛОГО -->\n        <a class=\"navbar-brand fw-bold d-flex align-items-center gap-2 me-auto me-lg-0\" href=\"#/\">\n            <span class=\"d-inline-flex align-items-center justify-content-center bg-primary text-white rounded-3\"\n                  style=\"width:32px;height:32px;\">\n                <i class=\"bi bi-car-front\"></i>\n            </span>\n            <span>";
 output += runtime.suppressValue(runtime.contextOrFrameLookup(context, frame, "appName"), env.opts.autoescape);
-output += "</span>\n        </a>\n        <button class=\"navbar-toggler\" type=\"button\" data-bs-toggle=\"collapse\"\n                data-bs-target=\"#navMain\" aria-controls=\"navMain\"\n                aria-expanded=\"false\" aria-label=\"Показать меню\">\n            <span class=\"navbar-toggler-icon\"></span>\n        </button>\n        \n    </div>\n        \n\n        <!-- СВОРАЧИВАЕМАЯ ЧАСТЬ -->\n        <div class=\"collapse navbar-collapse\" id=\"navMain\">\n            <div class=\"d-flex flex-column flex-lg-row align-items-stretch align-items-lg-center\n                        gap-2 ms-lg-3 mt-3 mt-lg-0\">\n\n                <!-- ==================== АВТОРИЗОВАН ==================== -->\n                <div class=\"d-flex flex-row justify-content-end align-items-center gap-2\" id=\"userBlock\">\n\n                    <!-- Тема -->\n                    <button type=\"button\"\n                            class=\"btn btn-outline-secondary border-0\"\n                            id=\"themeToggle\" aria-label=\"Переключить тему\">\n                        <i class=\"bi bi-moon-stars\" id=\"themeIcon\"></i>\n                    </button>\n\n                    <!-- Профиль -->\n                    <div class=\"dropdown\">\n                        <button class=\"btn p-0 border-0 d-flex align-items-center gap-2\"\n                                type=\"button\" data-bs-toggle=\"dropdown\" aria-expanded=\"false\"\n                                aria-label=\"Профиль\">\n                            <span id=\"avatar\"\n                                  class=\"avatar-circle bg-primary bg-opacity-25 text-primary fw-bold rounded-circle\">";
+output += "</span>\n        </a>\n        <button class=\"navbar-toggler\" type=\"button\" data-bs-toggle=\"collapse\"\n                data-bs-target=\"#navMain\" aria-controls=\"navMain\"\n                aria-expanded=\"false\" aria-label=\"Показать меню\">\n            <span class=\"navbar-toggler-icon\"></span>\n        </button>\n\n        <!-- СВОРАЧИВАЕМАЯ ЧАСТЬ -->\n        <div class=\"collapse navbar-collapse\" id=\"navMain\">\n            <div class=\"d-flex flex-column flex-lg-row align-items-stretch align-items-lg-center\n                        gap-2 ms-lg-3 mt-3 mt-lg-0\">\n\n                <!-- Разделы -->\n                <ul class=\"navbar-nav me-auto mb-2 mb-lg-0\">\n                    <li class=\"nav-item\">\n                        <a class=\"nav-link";
+if(runtime.contextOrFrameLookup(context, frame, "path") == "/") {
+output += " active";
+;
+}
+output += "\"\n                           href=\"#/\"";
+if(runtime.contextOrFrameLookup(context, frame, "path") == "/") {
+output += " aria-current=\"page\"";
+;
+}
+output += ">\n                            <i class=\"bi bi-car-front me-1\"></i>Автопарк\n                        </a>\n                    </li>\n                    ";
+if(runtime.contextOrFrameLookup(context, frame, "isAdmin")) {
+output += "\n                    <li class=\"nav-item\">\n                        <a class=\"nav-link";
+if(runtime.contextOrFrameLookup(context, frame, "path") == "/users" || runtime.contextOrFrameLookup(context, frame, "path") == "/users/") {
+output += " active";
+;
+}
+output += "\"\n                           href=\"#/users\"";
+if(runtime.contextOrFrameLookup(context, frame, "path") == "/users" || runtime.contextOrFrameLookup(context, frame, "path") == "/users/") {
+output += " aria-current=\"page\"";
+;
+}
+output += ">\n                            <i class=\"bi bi-people me-1\"></i>Пользователи\n                        </a>\n                    </li>\n                    ";
+;
+}
+output += "\n                </ul>\n\n                <!-- ==================== АВТОРИЗОВАН ==================== -->\n                <div class=\"d-flex flex-row justify-content-end align-items-center gap-2\" id=\"userBlock\">\n\n                    <!-- Тема -->\n                    <button type=\"button\"\n                            class=\"btn btn-outline-secondary border-0\"\n                            id=\"themeToggle\" aria-label=\"Переключить тему\">\n                        <i class=\"bi bi-moon-stars\" id=\"themeIcon\"></i>\n                    </button>\n\n                    <!-- Профиль -->\n                    <div class=\"dropdown\">\n                        <button class=\"btn p-0 border-0 d-flex align-items-center gap-2\"\n                                type=\"button\" data-bs-toggle=\"dropdown\" aria-expanded=\"false\"\n                                aria-label=\"Профиль\">\n                            <span id=\"avatar\"\n                                  class=\"avatar-circle bg-primary bg-opacity-25 text-primary fw-bold rounded-circle\">";
 output += runtime.suppressValue(runtime.memberLookup((runtime.contextOrFrameLookup(context, frame, "user")),"initial"), env.opts.autoescape);
 output += "</span>\n                        </button>\n\n                        <ul class=\"dropdown-menu dropdown-menu-end shadow rounded-4 p-2 dropdown-profile\"\n                            style=\"width:min(240px, calc(100vw - 1rem));\">\n                            <li class=\"px-3 py-2\">\n                                <div id=\"username\" class=\"fw-semibold text-truncate\">";
 output += runtime.suppressValue(runtime.memberLookup((runtime.contextOrFrameLookup(context, frame, "user")),"first_name") || runtime.memberLookup((runtime.contextOrFrameLookup(context, frame, "user")),"username"), env.opts.autoescape);
 output += "</div>\n                                <div id=\"email\" class=\"text-body-secondary small text-truncate\">";
 output += runtime.suppressValue(runtime.memberLookup((runtime.contextOrFrameLookup(context, frame, "user")),"email") || "—", env.opts.autoescape);
-output += "</div>\n                            </li>\n                            <li><hr class=\"dropdown-divider\"></li>\n                            <li>\n                                <a id=\"account\" class=\"dropdown-item rounded-3\" href=\"#/profile\">\n                                    <i class=\"bi bi-person me-2\"></i>Профиль\n                                </a>\n                            </li>\n                            <li><hr class=\"dropdown-divider\"></li>\n                            <li>\n                                <a class=\"dropdown-item rounded-3 text-danger\" href=\"#/login\" data-logout>\n                                    <i id=\"logout\" class=\"bi bi-box-arrow-right me-2\"></i>Выйти\n                                </a>\n                            </li>\n                        </ul>\n                    </div>\n                </div>\n\n            </div>\n        </div>\n</nav>\n";
+output += "</div>\n                                ";
+if(runtime.memberLookup((runtime.contextOrFrameLookup(context, frame, "user")),"role")) {
+output += "\n                                <div class=\"mt-1\">\n                                    <span class=\"badge text-bg-primary rounded-pill\">";
+output += runtime.suppressValue(runtime.memberLookup((runtime.contextOrFrameLookup(context, frame, "user")),"role"), env.opts.autoescape);
+output += "</span>\n                                </div>\n                                ";
+;
+}
+output += "\n                            </li>\n                            <li><hr class=\"dropdown-divider\"></li>\n                            <li>\n                                <a id=\"account\" class=\"dropdown-item rounded-3\" href=\"#/profile\">\n                                    <i class=\"bi bi-person me-2\"></i>Профиль\n                                </a>\n                            </li>\n                            <li><hr class=\"dropdown-divider\"></li>\n                            <li>\n                                <a class=\"dropdown-item rounded-3 text-danger\" href=\"#/login\" data-logout>\n                                    <i id=\"logout\" class=\"bi bi-box-arrow-right me-2\"></i>Выйти\n                                </a>\n                            </li>\n                        </ul>\n                    </div>\n                </div>\n\n            </div>\n        </div>\n    </div>\n</nav>\n";
 if(parentTemplate) {
 parentTemplate.rootRenderFunc(env, context, frame, runtime, cb);
 } else {
@@ -412,6 +692,13 @@ output += "\n<div style=\"max-width:900px;margin:0 auto;\">\n\n    <!-- Шапк
 output += runtime.suppressValue(runtime.memberLookup((runtime.contextOrFrameLookup(context, frame, "user")),"initials"), env.opts.autoescape);
 output += "\n                </div>\n\n                <!-- Имя, email -->\n                <div class=\"flex-grow-1 text-center text-sm-start\">\n                    <h1 class=\"h4 fw-bold mb-1\">\n                        ";
 output += runtime.suppressValue(runtime.memberLookup((runtime.contextOrFrameLookup(context, frame, "user")),"first_name") || runtime.memberLookup((runtime.contextOrFrameLookup(context, frame, "user")),"username"), env.opts.autoescape);
+output += "\n                        ";
+if(runtime.memberLookup((runtime.contextOrFrameLookup(context, frame, "user")),"role")) {
+output += "\n                        <span class=\"badge text-bg-primary align-middle\">";
+output += runtime.suppressValue(runtime.memberLookup((runtime.contextOrFrameLookup(context, frame, "user")),"role"), env.opts.autoescape);
+output += "</span>\n                        ";
+;
+}
 output += "\n                    </h1>\n                    <p class=\"text-body-secondary mb-0\">\n                        <i class=\"bi bi-envelope me-1\"></i>";
 output += runtime.suppressValue(runtime.memberLookup((runtime.contextOrFrameLookup(context, frame, "user")),"email") || "email не указан", env.opts.autoescape);
 output += "\n                    </p>\n                </div>\n\n                <!-- Дата регистрации + кнопку выйти -->\n                <div class=\"d-flex flex-column justify-content-between align-items-center align-items-sm-end gap-2 flex-shrink-0 align-self-stretch\">\n\n                    <div class=\"text-body-secondary small text-center text-sm-end\">\n                        <i class=\"bi bi-calendar3 me-1\"></i>\n                        Дата регистрации\n                        <div class=\"badge text-bg-secondary rounded-pill mt-1\">\n                            ";
@@ -422,11 +709,95 @@ output += "</dd>\n\n                        <dt class=\"col-sm-4 text-body-secon
 output += runtime.suppressValue(runtime.memberLookup((runtime.contextOrFrameLookup(context, frame, "user")),"first_name") || "—", env.opts.autoescape);
 output += "</dd>\n\n                        <dt class=\"col-sm-4 text-body-secondary fw-normal\">Фамилия</dt>\n                        <dd class=\"col-sm-8\">";
 output += runtime.suppressValue(runtime.memberLookup((runtime.contextOrFrameLookup(context, frame, "user")),"last_name") || "—", env.opts.autoescape);
-output += "</dd>\n\n                        <dt class=\"col-sm-4 text-body-secondary fw-normal\">Email</dt>\n                        <dd class=\"col-sm-8 mb-0\">";
+output += "</dd>\n\n                        <dt class=\"col-sm-4 text-body-secondary fw-normal\">Email</dt>\n                        <dd class=\"col-sm-8\">";
 output += runtime.suppressValue(runtime.memberLookup((runtime.contextOrFrameLookup(context, frame, "user")),"email") || "—", env.opts.autoescape);
+output += "</dd>\n\n                        <dt class=\"col-sm-4 text-body-secondary fw-normal\">Роль</dt>\n                        <dd class=\"col-sm-8 mb-0\">";
+output += runtime.suppressValue(runtime.memberLookup((runtime.contextOrFrameLookup(context, frame, "user")),"role") || "—", env.opts.autoescape);
 output += "</dd>\n                    </dl>\n                </div>\n            </div>\n        </div>\n    </div>\n\n</div>\n";
 cb(null, output);
 ;
+} catch (e) {
+  cb(runtime.handleError(e, lineno, colno));
+}
+}
+return {
+b_content: b_content,
+root: root
+};
+
+})();
+})();
+
+(function() {(window.nunjucksPrecompiled = window.nunjucksPrecompiled || {})["users.html"] = (function() {
+function root(env, context, frame, runtime, cb) {
+var lineno = 0;
+var colno = 0;
+var output = "";
+try {
+var parentTemplate = null;
+env.getTemplate("base.html", true, "users.html", false, function(t_3,t_2) {
+if(t_3) { cb(t_3); return; }
+parentTemplate = t_2
+for(var t_1 in parentTemplate.blocks) {
+context.addBlock(t_1, parentTemplate.blocks[t_1]);
+}
+output += "\n\n";
+(parentTemplate ? function(e, c, f, r, cb) { cb(""); } : context.getBlock("content"))(env, context, frame, runtime, function(t_5,t_4) {
+if(t_5) { cb(t_5); return; }
+output += t_4;
+output += "\n";
+if(parentTemplate) {
+parentTemplate.rootRenderFunc(env, context, frame, runtime, cb);
+} else {
+cb(null, output);
+}
+})});
+} catch (e) {
+  cb(runtime.handleError(e, lineno, colno));
+}
+}
+function b_content(env, context, frame, runtime, cb) {
+var lineno = 2;
+var colno = 3;
+var output = "";
+try {
+var frame = frame.push(true);
+output += "\n<div class=\"container-fluid p-3 p-lg-4 d-flex flex-column gap-3\" style=\"max-width:1100px;\">\n\n    <!-- Поиск и действия -->\n    <div class=\"card border-0 shadow-sm rounded-4\">\n        <div class=\"card-body p-3 p-lg-4 d-flex flex-column gap-3\">\n\n            <form id=\"userSearchForm\" class=\"d-flex gap-2 flex-wrap\" role=\"search\">\n                <input id=\"userSearchInput\" class=\"form-control\" type=\"search\"\n                       placeholder=\"Поиск по логину\"\n                       aria-label=\"Поиск по пользователям\"\n                       autocomplete=\"off\"\n                       value=\"";
+output += runtime.suppressValue(runtime.contextOrFrameLookup(context, frame, "usersQuery"), env.opts.autoescape);
+output += "\">\n                <div class=\"d-flex gap-2\">\n                    <button class=\"btn btn-outline-secondary\" type=\"button\" id=\"userSearchReset\">Сбросить</button>\n                    <button class=\"btn btn-outline-primary\" type=\"submit\">\n                        <i class=\"bi bi-search me-1\"></i>Найти\n                    </button>\n                </div>\n            </form>\n\n            <div class=\"d-flex flex-wrap justify-content-between align-items-center gap-2\">\n                <div class=\"text-body-secondary small\">\n                    Показано <span id=\"usersShown\" class=\"fw-semibold text-body\">";
+output += runtime.suppressValue(env.getFilter("length").call(context, runtime.contextOrFrameLookup(context, frame, "users")), env.opts.autoescape);
+output += "</span>\n                    из <span id=\"usersTotal\" class=\"fw-semibold text-body\">";
+output += runtime.suppressValue(env.getFilter("length").call(context, runtime.contextOrFrameLookup(context, frame, "allUsers")), env.opts.autoescape);
+output += "</span>\n                    ";
+if(runtime.contextOrFrameLookup(context, frame, "usersQuery")) {
+output += "\n                    <span class=\"badge text-bg-light border ms-2\">фильтр: ";
+output += runtime.suppressValue(runtime.contextOrFrameLookup(context, frame, "usersQuery"), env.opts.autoescape);
+output += "</span>\n                    ";
+;
+}
+output += "\n                </div>\n\n                <button class=\"btn btn-outline-secondary btn-sm\" type=\"button\" id=\"usersRefresh\"\n                        title=\"Обновить список\">\n                    <i class=\"bi bi-arrow-clockwise\"></i>\n                </button>\n            </div>\n\n        </div>\n    </div>\n\n    <!-- Список пользователей -->\n    <div id=\"userListWrap\">\n        ";
+var tasks = [];
+tasks.push(
+function(callback) {
+env.getTemplate("components/users_list.html", false, "users.html", false, function(t_7,t_6) {
+if(t_7) { cb(t_7); return; }
+callback(null,t_6);});
+});
+tasks.push(
+function(template, callback){
+template.render(context.getVariables(), frame, function(t_9,t_8) {
+if(t_9) { cb(t_9); return; }
+callback(null,t_8);});
+});
+tasks.push(
+function(result, callback){
+output += result;
+callback(null);
+});
+env.waterfall(tasks, function(){
+output += "\n    </div>\n\n</div>\n";
+cb(null, output);
+});
 } catch (e) {
   cb(runtime.handleError(e, lineno, colno));
 }

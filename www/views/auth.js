@@ -1,13 +1,15 @@
-import { 
+import {
         data,
-        setStartupError, 
-        set_authenticated, 
-        tokens, 
+        setStartupError,
+        set_authenticated,
+        tokens,
         saveTokens,
-        clearTokens
+        clearTokens,
+        resetSessionData,
      } from "../conf/state.js";
-import { apiRequest, authenticatedRequest} from "../conf/api.js";
+import { apiRequest, authenticatedRequest } from "../conf/api.js";
 import { redirect } from "../conf/render.js";
+import { loadCars } from "./cars.js";
 
 export function normalizeUser(profile) {
     const user = { ...(profile && typeof profile === 'object' ? profile : {}) };
@@ -20,6 +22,8 @@ export function normalizeUser(profile) {
     user.initial = (base.charAt(0) || '?').toUpperCase();
     user.initials = `${base.charAt(0)}${second ? second.charAt(0) : ''}`.toUpperCase() || '?';
 
+    user.role = String(user.role || '').trim();
+
     user.date_joined_label = '';
     if (user.date_joined) {
         const d = new Date(user.date_joined);
@@ -30,8 +34,31 @@ export function normalizeUser(profile) {
     return user;
 }
 
+
 export async function loadProfile() {
-    return normalizeUser(await authenticatedRequest('/profile/'));
+    const profile = normalizeUser(await authenticatedRequest('/profile/'));
+
+    if (profile.id) {
+        try {
+            const info = await authenticatedRequest(`/profile-info/${profile.id}/`);
+            profile.role = info?.role || '';
+            profile.email = profile.email || info?.email || '';
+        } catch (error) {
+            console.warn('Не удалось загрузить роль пользователя:', error);
+        }
+    }
+    return profile;
+}
+
+export async function loadIsAdmin() {
+    try {
+        const payload = await authenticatedRequest('/amisuperuser/');
+        data.isAdmin = !!(payload && payload.status_admin);
+    } catch (error) {
+        console.warn('Не удалось определить права пользователя:', error);
+        data.isAdmin = false;
+    }
+    return data.isAdmin;
 }
 
 export async function login(username, password) {
@@ -44,7 +71,9 @@ export async function login(username, password) {
     set_authenticated(true);
     data.authenticated = true;
     setStartupError('');
-    // Дальше редирект на главную делает inline-скрипт страницы: window.navigate('/')
+
+
+    await Promise.allSettled([loadIsAdmin(), loadCars({ silent: true })]);
 }
 
 export async function register(user) {
@@ -64,12 +93,10 @@ export async function logout() {
                 body: JSON.stringify({ refresh_token: refresh }),
             }, tokens?.access || '');
         } catch {
-            // сервер может быть недоступен — локальную сессию чистим в любом случае
         }
     }
     await clearTokens();
     set_authenticated(false);
-    data.authenticated = false;
-    data.user = {};
+    resetSessionData();
     redirect('/login');
 }

@@ -1,47 +1,25 @@
 import { API_BASE } from "./conf/conf.js";
-import { render, scheduleRender, redirect} from "./conf/render.js"
-import { 
+import { render, scheduleRender, redirect, getCurrentPath } from "./conf/render.js";
+import {
         data,
-        authReady, 
-        startupError, 
-        markAuthReady, 
-        setStartupError, 
-        set_authenticated, 
-        tokens, 
+        authReady,
+        startupError,
+        markAuthReady,
+        setStartupError,
+        set_authenticated,
+        tokens,
         setTokens,
         readTokens,
-        saveTokens,
-        clearTokens
+        clearTokens,
      } from "./conf/state.js";
 
-import { loadProfile, login, register, logout } from "./views/auth.js";
-import { loadCars, renderCarsUi } from "./views/cars.js";
-/* ======================= Ошибки ======================= */
-
-class ApiError extends Error {
-    constructor(message, status) {
-        super(message);
-        this.status = status;
-    }
-}
-
-// DRF отдаёт ошибки вложенной структурой — разворачиваем в читаемую строку
-function flattenMessages(value) {
-    if (value === null || value === undefined) return [];
-    if (typeof value === 'string') return [value];
-    if (Array.isArray(value)) return value.flatMap(flattenMessages);
-    if (typeof value === 'object') return Object.values(value).flatMap(flattenMessages);
-    return [String(value)];
-}
-
-
-/* ======================= Auth ======================= */
-
+import { loadProfile, loadIsAdmin, login, register, logout } from "./views/auth.js";
+import { loadCars, initCarHandlers } from "./views/cars.js";
+import { loadUsers, initUsersHandlers } from "./views/users.js";
 
 /* ======================= Обработчики ======================= */
 
-// Один раз на документе, делегированием: переживает любую перерисовку #root
-// и не требует повторного attach после каждого render().
+
 document.addEventListener('click', (event) => {
     const logoutBtn = event.target.closest('[data-logout]');
     if (!logoutBtn) return;
@@ -54,6 +32,24 @@ document.addEventListener('submit', (event) => {
     event.preventDefault();
     logout();
 });
+
+initCarHandlers();
+initUsersHandlers();
+
+/* ======================= Данные страницы ======================= */
+
+
+function loadPageData() {
+    if (!data.authenticated) return;
+
+    const path = getCurrentPath();
+    if (path === '/' && !data.carsLoaded && !data.carsLoading) {
+        loadCars();
+    }
+    if ((path === '/users' || path === '/users/') && !data.usersLoaded && !data.usersLoading) {
+        loadUsers();
+    }
+}
 
 /* ======================= Инициализация ======================= */
 
@@ -68,27 +64,24 @@ async function initialize() {
             data.user = await loadProfile();
             set_authenticated(true);
             data.authenticated = true;
-            await loadCars({ silent: true });
+
+            await Promise.allSettled([loadIsAdmin(), loadCars({ silent: true })]);
         }
     } catch (error) {
         if (error.status === 401) {
-            // Токен протух и не восстановился — чистим сессию и уходим на вход
             await clearTokens();
             setTokens(null);
             set_authenticated(false);
+            data.authenticated = false;
         } else {
-            // Сетевая ошибка (status 0) — покажем её на странице входа
             setStartupError(error.message);
         }
     }
 
     markAuthReady();
     render(true);
+    loadPageData();
 }
-
-/* ======================= Экспорт для inline-скриптов ======================= */
-// Шаблоны (auth/login.html, auth/reg.html) зовут эти функции из своих <script>,
-// которые оживляет rehydrateScripts(). Объявляем ДО запуска initialize().
 
 window.taskflowAuth = { login, register, logout };
 window.logout = logout;
@@ -97,6 +90,9 @@ window.navigate = (path) => redirect(path.startsWith('/') ? path : `/${path}`);
 // Для отладки из DevTools
 window.__debug = {
     loadProfile,
+    loadIsAdmin,
+    loadCars,
+    loadUsers,
     login,
     logout,
     getData: () => data,
@@ -105,8 +101,13 @@ window.__debug = {
     isReady: () => authReady,
 };
 
-window.addEventListener('hashchange', scheduleRender);
-window.addEventListener('popstate', scheduleRender);
+function onRouteChange() {
+    scheduleRender();
+    loadPageData();
+}
+
+window.addEventListener('hashchange', onRouteChange);
+window.addEventListener('popstate', onRouteChange);
 
 if (document.readyState === 'loading') {
     window.addEventListener('DOMContentLoaded', initialize, { once: true });

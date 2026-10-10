@@ -1,15 +1,16 @@
-import { REQUEST_TIMEOUT_MS, API_BASE } from "./conf";
-import { 
+import { REQUEST_TIMEOUT_MS, API_BASE } from "./conf.js";
+import {
         data,
-        set_authenticated, 
-        tokens, 
+        set_authenticated,
+        tokens,
         saveTokens,
-        clearTokens
+        clearTokens,
+        resetSessionData,
      } from "./state.js";
+import { ApiError, flattenMessages } from "./errors.js";
+import { redirect } from "./render.js";
 
-// fetch без таймаута мог зависнуть навсегда: например, на 127.0.0.1:8080
-// открытый сокет, который никогда не отвечает. Тогда initialize() так и не
-// дошёл бы до render() — вечный спиннер «Подключаемся к серверу…».
+
 export function withTimeout(signal) {
     const timeout = AbortSignal.timeout(REQUEST_TIMEOUT_MS);
     if (!signal) return timeout;
@@ -21,7 +22,7 @@ export async function apiRequest(path, options = {}, accessToken = '') {
         throw new ApiError('Сервер API не найден в локальной сети', 0);
     }
 
-    const headers = { ...options.headers };REQUEST_TIMEOUT_MS
+    const headers = { ...options.headers };
 
     if (options.body && !(options.body instanceof FormData)) {
         headers['Content-Type'] = 'application/json';
@@ -48,7 +49,6 @@ export async function apiRequest(path, options = {}, accessToken = '') {
         throw new ApiError(`Не удалось подключиться к серверу ${API_BASE}`, 0);
     }
 
-    // 204/205 — тело пустое, парсить нечего
     const body =
         response.status === 204 || response.status === 205
             ? null
@@ -77,13 +77,11 @@ export async function refreshTokens() {
 export async function sessionExpired() {
     await clearTokens();
     set_authenticated(false);
-    data.authenticated = false;
-    data.user = {};
+    resetSessionData();
     redirect('/login');
 }
 
-// Основной вход в API для авторизованных страниц: сам доставляет access-токен
-// и молча (однократно) обновляет его при 401.
+
 export async function authenticatedRequest(path, options = {}) {
     try {
         return await apiRequest(path, options, tokens?.access || '');

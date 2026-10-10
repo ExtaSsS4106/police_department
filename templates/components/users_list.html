@@ -1,0 +1,52 @@
+{# Таблица пользователей. Используется и как {% include %} в users.html,
+   и как partial через window.renderPage('components/users_list.html', data). #}
+{% if usersLoading %}
+<div class="d-flex flex-column align-items-center justify-content-center text-body-secondary py-5">
+    <div class="spinner-border mb-3" role="status" aria-hidden="true"></div>
+    <div class="small">Загружаем пользователей…</div>
+</div>
+
+{% elif usersError %}
+<div class="alert alert-danger d-flex align-items-center gap-2 mb-0" role="alert">
+    <i class="bi bi-exclamation-triangle-fill"></i>
+    <div>{{ usersError }}</div>
+</div>
+
+{% elif users | length == 0 %}
+<div class="card border-0 shadow-sm rounded-4">
+    <div class="card-body text-center text-body-secondary py-5">
+        <i class="bi bi-people fs-1 d-block mb-3"></i>
+        {% if usersQuery %}
+        Пользователей с логином «{{ usersQuery }}» не найдено.
+        {% else %}
+        Пользователей пока нет.
+        {% endif %}
+    </div>
+</div>
+
+{% else %}
+<div class="card border-0 shadow-sm rounded-4">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th scope="col" style="width:90px;">ID</th>
+                    <th scope="col">Логин</th>
+                    <th scope="col" style="width:140px;">ID пользователя</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in users %}
+                <tr>
+                    <td class="text-body-secondary">{{ row.profile_id }}</td>
+                    <td class="fw-semibold">
+                        <i class="bi bi-person-circle me-2 text-body-secondary"></i>{{ row.username }}
+                    </td>
+                    <td class="text-body-secondary">{{ row.user_id }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
