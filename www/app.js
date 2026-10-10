@@ -15,6 +15,7 @@ import {
      } from "./conf/state.js";
 
 import { loadProfile, login, register, logout } from "./views/auth.js";
+import { loadCars, renderCarsUi } from "./views/cars.js";
 /* ======================= Ошибки ======================= */
 
 class ApiError extends Error {
@@ -67,6 +68,7 @@ async function initialize() {
             data.user = await loadProfile();
             set_authenticated(true);
             data.authenticated = true;
+            await loadCars({ silent: true });
         }
     } catch (error) {
         if (error.status === 401) {

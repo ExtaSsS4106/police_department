@@ -14,6 +14,7 @@ export const data = {
     title: 'Главная',
     authenticated: false,
     user: {},
+    cars: [],
 };
 
 // true после того, как initialize() восстановил сессию (или убедился, что её нет).
