@@ -1,0 +1,282 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Авторизация</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+<body class="bg-body-tertiary">
+
+<div class="container">
+    <div class="row justify-content-center align-items-center min-vh-100">
+        <div class="col-12 col-sm-10 col-md-8 col-lg-5 col-xl-4">
+
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="card-body p-4 p-md-5">
+
+                    <div class="text-center mb-4">
+                        <div class="d-inline-flex align-items-center justify-content-center bg-primary bg-opacity-10 text-primary rounded-circle mb-3"
+                             style="width:64px;height:64px;">
+                            <i class="bi bi-shield-lock fs-2"></i>
+                        </div>
+                        <h1 class="h3 fw-bold mb-2">Вход в аккаунт</h1>
+                        <p class="text-body-secondary small mb-0">Введите свои данные для входа</p>
+                    </div>
+
+                    <!-- Общая ошибка от сервера -->
+                    <div class="alert alert-danger d-none align-items-center gap-2 py-2 small"
+                         id="nonFieldAlert" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill"></i>
+                        <div id="nonFieldText"></div>
+                    </div>
+
+                    <!-- Уведомление об успехе -->
+                    <div class="alert alert-success d-none align-items-center gap-2"
+                         id="successAlert" role="alert">
+                        <i class="bi bi-check-circle-fill"></i>
+                        <div>Успешный вход! Перенаправляем…</div>
+                    </div>
+
+                    <form id="loginForm"
+                          method="post"
+                          action="{% url 'web-login' %}"
+                          novalidate>
+                        {% csrf_token %}
+
+                        <!-- Логин / Email -->
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Имя пользователя</label>
+                            <div class="input-group input-group-lg has-validation">
+                                <span class="input-group-text">
+                                    <i class="bi bi-person"></i>
+                                </span>
+                                <input type="text"
+                                       class="form-control"
+                                       id="username"
+                                       name="username"
+                                       placeholder="username"
+                                       autocomplete="username"
+                                       required>
+                                <div class="invalid-feedback" id="usernameError">
+                                    Введите имя пользователя.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Пароль -->
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Пароль</label>
+                            <div class="input-group input-group-lg has-validation">
+                                <span class="input-group-text">
+                                    <i class="bi bi-key"></i>
+                                </span>
+                                <input type="password"
+                                       class="form-control"
+                                       id="password"
+                                       name="password"
+                                       placeholder="••••••••"
+                                       minlength="6"
+                                       autocomplete="current-password"
+                                       required>
+                                <button class="btn btn-outline-secondary"
+                                        type="button"
+                                        id="togglePassword"
+                                        aria-label="Показать пароль">
+                                    <i class="bi bi-eye" id="toggleIcon"></i>
+                                </button>
+                                <div class="invalid-feedback" id="passwordError">
+                                    Пароль должен содержать минимум 6 символов.
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-lg w-100 mb-3" id="submitBtn">
+                            <span class="spinner-border spinner-border-sm me-2 d-none"
+                                  id="submitSpinner" role="status" aria-hidden="true"></span>
+                            <i class="bi bi-box-arrow-in-right me-1" id="submitIcon"></i>
+                            <span id="submitText">Войти</span>
+                        </button>
+                    </form>
+
+                    <div class="text-center">
+                        <span class="text-body-secondary small">Нет аккаунта?</span>
+                        <a href="{% url 'web-signup' %}" class="text-decoration-none small">Зарегистрироваться</a>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+(() => {
+    const form           = document.getElementById('loginForm');
+    const username       = document.getElementById('username');
+    const password       = document.getElementById('password');
+    const usernameError  = document.getElementById('usernameError');
+    const passwordError  = document.getElementById('passwordError');
+
+    const toggleBtn      = document.getElementById('togglePassword');
+    const toggleIcon     = document.getElementById('toggleIcon');
+
+    const submitBtn      = document.getElementById('submitBtn');
+    const submitSpinner  = document.getElementById('submitSpinner');
+    const submitIcon     = document.getElementById('submitIcon');
+    const submitText     = document.getElementById('submitText');
+
+    const successAlert   = document.getElementById('successAlert');
+    const nonFieldAlert  = document.getElementById('nonFieldAlert');
+    const nonFieldText   = document.getElementById('nonFieldText');
+
+    // ----- Показать/скрыть пароль -----
+    toggleBtn.addEventListener('click', () => {
+        const hidden = password.type === 'password';
+        password.type = hidden ? 'text' : 'password';
+        toggleIcon.classList.toggle('bi-eye', !hidden);
+        toggleIcon.classList.toggle('bi-eye-slash', hidden);
+        toggleBtn.setAttribute('aria-label', hidden ? 'Скрыть пароль' : 'Показать пароль');
+    });
+
+    // ----- Клиентская валидация -----
+    const validators = {
+        username() {
+            return username.value.trim() ? '' : 'Введите имя пользователя.';
+        },
+        password() {
+            if (!password.value) return 'Введите пароль.';
+            if (password.value.length < 6) return 'Пароль должен содержать минимум 6 символов.';
+            return '';
+        }
+    };
+
+    function setFieldState(input, errorEl, message) {
+        if (message) {
+            input.classList.add('is-invalid');
+            input.classList.remove('is-valid');
+            errorEl.textContent = message;
+        } else {
+            input.classList.remove('is-invalid');
+            input.classList.add('is-valid');
+        }
+    }
+
+    function validateField(name) {
+        const input   = name === 'username' ? username : password;
+        const errorEl = name === 'username' ? usernameError : passwordError;
+        const msg     = validators[name]();
+        setFieldState(input, errorEl, msg);
+        return !msg;
+    }
+
+    ['username', 'password'].forEach(name => {
+        const input = name === 'username' ? username : password;
+        input.addEventListener('blur', () => validateField(name));
+        input.addEventListener('input', () => {
+            if (input.classList.contains('is-invalid')) validateField(name);
+        });
+    });
+
+    function clearServerErrors() {
+        nonFieldAlert.classList.add('d-none');
+        nonFieldAlert.classList.remove('d-flex');
+        nonFieldText.textContent = '';
+    }
+
+    // ----- Отправка -----
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        clearServerErrors();
+
+        const okUser = validateField('username');
+        const okPass = validateField('password');
+        if (!okUser || !okPass) {
+            (!okUser ? username : password).focus();
+            return;
+        }
+
+        submitBtn.disabled = true;
+        submitIcon.classList.add('d-none');
+        submitSpinner.classList.remove('d-none');
+        submitText.textContent = 'Проверяем…';
+
+        try {
+            const response = await fetch(form.action, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': form.querySelector('[name=csrfmiddlewaretoken]').value,
+                },
+                body: new FormData(form),
+                credentials: 'same-origin',
+            });
+
+            // Если Django сделал обычный redirect (например, на успех) —
+            // fetch его отработает, идём по адресу.
+            if (response.redirected) {
+                successAlert.classList.remove('d-none');
+                successAlert.classList.add('d-flex');
+                window.location.href = response.url;
+                return;
+            }
+
+            // Пытаемся прочитать JSON-ответ
+            let data = null;
+            const ct = response.headers.get('content-type') || '';
+            if (ct.includes('application/json')) {
+                data = await response.json();
+            }
+
+            if (response.ok && data && data.ok) {
+                successAlert.classList.remove('d-none');
+                successAlert.classList.add('d-flex');
+                setTimeout(() => { window.location.href = data.redirect || '/'; }, 600);
+                return;
+            }
+
+            // Ошибки валидации
+            if (data) {
+                if (data.errors) {
+                    if (data.errors.username) {
+                        username.classList.add('is-invalid');
+                        usernameError.textContent = data.errors.username[0] || data.errors.username;
+                    }
+                    if (data.errors.password) {
+                        password.classList.add('is-invalid');
+                        passwordError.textContent = data.errors.password[0] || data.errors.password;
+                    }
+                }
+                const nfe = data.non_field_errors || data.detail;
+                if (nfe) {
+                    const msg = Array.isArray(nfe) ? nfe[0] : nfe;
+                    nonFieldText.textContent = msg;
+                    nonFieldAlert.classList.remove('d-none');
+                    nonFieldAlert.classList.add('d-flex');
+                }
+            } else {
+                nonFieldText.textContent = 'Ошибка сервера. Попробуйте ещё раз.';
+                nonFieldAlert.classList.remove('d-none');
+                nonFieldAlert.classList.add('d-flex');
+            }
+        } catch (err) {
+            nonFieldText.textContent = 'Не удалось связаться с сервером.';
+            nonFieldAlert.classList.remove('d-none');
+            nonFieldAlert.classList.add('d-flex');
+        } finally {
+            submitBtn.disabled = false;
+            submitSpinner.classList.add('d-none');
+            submitIcon.classList.remove('d-none');
+            submitText.textContent = 'Войти';
+        }
+    });
+})();
+</script>
+</body>
+</html>

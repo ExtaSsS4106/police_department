@@ -1,0 +1,53 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>403 — Доступ запрещён</title>
+    <link href="{% static 'bootstrap-5.3.8-dist/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'bootstrap-icons/font/bootstrap-icons.css' %}" rel="stylesheet">
+    <script src="{% static 'bootstrap-5.3.8-dist/js/bootstrap.bundle.min.js' %}"></script>
+</head>
+<body class="bg-body-tertiary">
+
+    <div class="container">
+        <div class="row justify-content-center align-items-center min-vh-100 py-5">
+            <div class="col-12 col-md-8 col-lg-6 text-center">
+
+                <div class="d-inline-flex align-items-center justify-content-center bg-danger bg-opacity-10 text-danger rounded-circle mb-4"
+                     style="width:120px;height:120px;">
+                    <i class="bi bi-shield-lock" style="font-size:3.5rem;"></i>
+                </div>
+
+                <h1 class="display-1 fw-bold text-danger mb-0">403</h1>
+                <h2 class="h3 fw-bold mb-3">Доступ запрещён</h2>
+
+                <p class="text-body-secondary mb-4">
+                    У вас нет прав для просмотра этой страницы.
+                    Возможно, требуется войти в аккаунт с другими правами
+                    или запросить доступ у администратора.
+                </p>
+
+                <div class="d-flex flex-column flex-sm-row justify-content-center gap-2">
+                    <a href="/login" class="btn btn-primary btn-lg">
+                        <i class="bi bi-box-arrow-in-right me-1"></i>
+                        Войти
+                    </a>
+                    <a href="/" class="btn btn-outline-secondary btn-lg">
+                        <i class="bi bi-house-door me-1"></i>
+                        На главную
+                    </a>
+                </div>
+
+                <p class="text-body-secondary small mt-5 mb-0">
+                    Считаете, что это ошибка? Обратитесь в
+                    <a href="mailto:support@example.com" class="text-decoration-none">поддержку</a>.
+                </p>
+
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

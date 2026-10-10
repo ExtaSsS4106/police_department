@@ -1,0 +1,419 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Регистрация</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+<body class="bg-body-tertiary">
+
+    <div class="container">
+        <div class="row justify-content-center align-items-center min-vh-100 py-5">
+            <div class="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-5">
+
+                <div class="card shadow-lg border-0 rounded-4">
+                    <div class="card-body p-4 p-md-5">
+
+                        <div class="text-center mb-4">
+                            <div class="d-inline-flex align-items-center justify-content-center bg-primary bg-opacity-10 text-primary rounded-circle mb-3"
+                                 style="width:64px;height:64px;">
+                                <i class="bi bi-person-plus fs-2"></i>
+                            </div>
+                            <h1 class="h3 fw-bold mb-2">Создать аккаунт</h1>
+                            <p class="text-body-secondary small mb-0">Заполните форму, чтобы начать</p>
+                        </div>
+
+                        <!-- Уведомление об успехе -->
+                        <div class="alert alert-success d-none align-items-center gap-2" id="successAlert" role="alert">
+                            <i class="bi bi-check-circle-fill"></i>
+                            <div>Аккаунт создан! Перенаправляем на вход…</div>
+                        </div>
+                        <div class="alert alert-danger d-none align-items-center gap-2 py-2 small"
+                            id="nonFieldAlert" role="alert">
+                            <i class="bi bi-exclamation-triangle-fill"></i>
+                            <div id="nonFieldText"></div>
+                        </div>
+                        <form id="registerForm"
+                              method="post"
+                              action="{% url 'web-signup' %}"
+                              novalidate>
+                            {% csrf_token %}
+
+                            <!-- Имя -->
+                            <div class="mb-3">
+                                <label for="name" class="form-label">Имя</label>
+                                <div class="input-group input-group-lg has-validation">
+                                    <span class="input-group-text">
+                                        <i class="bi bi-person"></i>
+                                    </span>
+                                    <input type="text" class="form-control"
+                                      id="username"
+                                      name="username"         
+                                      placeholder="username"    
+                                      minlength="3"
+                                      maxlength="150"
+                                      required>
+                                    <div class="invalid-feedback" id="nameError">
+                                        Введите имя (минимум 2 символа).
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Email -->
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <div class="input-group input-group-lg has-validation">
+                                    <span class="input-group-text">
+                                        <i class="bi bi-envelope"></i>
+                                    </span>
+                                    <input
+                                        type="email"
+                                        class="form-control"
+                                        id="email"
+                                        name="email"
+                                        placeholder="name@example.com"
+                                        required>
+                                    <div class="invalid-feedback" id="emailError">
+                                        Введите корректный email.
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Пароль -->
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Пароль</label>
+                                <div class="input-group input-group-lg has-validation">
+                                    <span class="input-group-text">
+                                        <i class="bi bi-key"></i>
+                                    </span>
+                                    <input
+                                        type="password"
+                                        class="form-control"
+                                        id="password"
+                                        name="password1"
+                                        placeholder="••••••••"
+                                        minlength="8"
+                                        required>
+                                    <button
+                                        class="btn btn-outline-secondary"
+                                        type="button"
+                                        id="togglePassword"
+                                        aria-label="Показать пароль">
+                                        <i class="bi bi-eye" id="toggleIcon"></i>
+                                    </button>
+                                    <div class="invalid-feedback" id="passwordError">
+                                        Пароль должен содержать минимум 8 символов.
+                                    </div>
+                                </div>
+
+                                <!-- Индикатор надёжности пароля -->
+                                <div class="progress mt-2" style="height:6px;" role="progressbar"
+                                     aria-label="Надёжность пароля" aria-valuemin="0" aria-valuemax="4" aria-valuenow="0"
+                                     id="strengthBarWrap">
+                                    <div class="progress-bar" id="strengthBar" style="width:0%"></div>
+                                </div>
+                                <div class="form-text" id="strengthText">Минимум 8 символов, буквы и цифры</div>
+                            </div>
+
+                            <!-- Подтверждение пароля -->
+                            <div class="mb-3">
+                                <label for="password2" class="form-label">Подтвердите пароль</label>
+                                <div class="input-group input-group-lg has-validation">
+                                    <span class="input-group-text">
+                                        <i class="bi bi-shield-check"></i>
+                                    </span>
+                                    <input
+                                        type="password"
+                                        class="form-control"
+                                        id="password2"
+                                        name="password2"
+                                        placeholder="••••••••"
+                                        onpaste="return false;"
+                                        required>
+                                    <button
+                                        class="btn btn-outline-secondary"
+                                        type="button"
+                                        id="togglePassword2"
+                                        aria-label="Показать пароль">
+                                        <i class="bi bi-eye" id="toggleIcon2"></i>
+                                    </button>
+                                    <div class="invalid-feedback" id="password2Error">
+                                        Пароли не совпадают.
+                                    </div>
+                                </div>
+                            </div>
+
+                           
+
+                            <button type="submit" class="btn btn-primary btn-lg w-100 mb-3" id="submitBtn">
+                                <span class="spinner-border spinner-border-sm me-2 d-none" id="submitSpinner" role="status" aria-hidden="true"></span>
+                                <i class="bi bi-person-plus me-1" id="submitIcon"></i>
+                                <span id="submitText">Зарегистрироваться</span>
+                            </button>
+                        </form>
+
+                        <div class="text-center">
+                            <span class="text-body-secondary small">Уже есть аккаунт?</span>
+                            <a href="/login" class="text-decoration-none small">Войти</a>
+                        </div>
+
+                    </div>
+                </div>
+
+                
+
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        (() => {
+          const nonFieldAlert = document.getElementById('nonFieldAlert');
+          const nonFieldText  = document.getElementById('nonFieldText');
+
+          function showNonField(msg) {
+              nonFieldText.textContent = msg;
+              nonFieldAlert.classList.remove('d-none');
+              nonFieldAlert.classList.add('d-flex');
+          }
+          function clearNonField() {
+              nonFieldAlert.classList.add('d-none');
+              nonFieldAlert.classList.remove('d-flex');
+              nonFieldText.textContent = '';
+          }
+            const form = document.getElementById('registerForm');
+
+            const fields = {
+                username:      document.getElementById('username'),
+                email:     document.getElementById('email'),
+                password:  document.getElementById('password'),
+                password2: document.getElementById('password2')
+            };
+
+            const errors = {
+                username:      document.getElementById('nameError'),
+                email:     document.getElementById('emailError'),
+                password:  document.getElementById('passwordError'),
+                password2: document.getElementById('password2Error')
+            };
+
+            const strengthBar  = document.getElementById('strengthBar');
+            const strengthText = document.getElementById('strengthText');
+
+            const submitBtn     = document.getElementById('submitBtn');
+            const submitSpinner = document.getElementById('submitSpinner');
+            const submitIcon    = document.getElementById('submitIcon');
+            const submitText    = document.getElementById('submitText');
+            const successAlert  = document.getElementById('successAlert');
+
+            // ---------- Просмотр пароля (оба поля) ----------
+            function setupToggle(btnId, iconId, input) {
+                const btn = document.getElementById(btnId);
+                const icon = document.getElementById(iconId);
+                btn.addEventListener('click', () => {
+                    const hidden = input.type === 'password';
+                    input.type = hidden ? 'text' : 'password';
+                    icon.classList.toggle('bi-eye', !hidden);
+                    icon.classList.toggle('bi-eye-slash', hidden);
+                    btn.setAttribute('aria-label', hidden ? 'Скрыть пароль' : 'Показать пароль');
+                });
+            }
+            setupToggle('togglePassword',  'toggleIcon',  fields.password);
+            setupToggle('togglePassword2', 'toggleIcon2', fields.password2);
+
+            // ---------- Валидаторы ----------
+            const validators = {
+                username() {
+                    const v = fields.username.value.trim();
+                    if (!v) return 'Введите имя.';
+                    if (v.length < 2) return 'Имя должно содержать минимум 2 символа.';
+                    return '';
+                },
+                email() {
+                    const v = fields.email.value.trim();
+                    if (!v) return 'Введите email.';
+                    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    if (!re.test(v)) return 'Введите корректный email.';
+                    return '';
+                },
+                password() {
+                    const v = fields.password.value;
+                    if (!v) return 'Введите пароль.';
+                    if (v.length < 8) return 'Пароль должен содержать минимум 8 символов.';
+                    if (!/[a-zA-Zа-яА-Я]/.test(v) || !/\d/.test(v))
+                        return 'Пароль должен содержать буквы и цифры.';
+                    return '';
+                },
+                password2() {
+                    const v = fields.password2.value;
+                    if (!v) return 'Подтвердите пароль.';
+                    if (v !== fields.password.value) return 'Пароли не совпадают.';
+                    return '';
+                }
+            };
+
+            function setFieldState(name, message) {
+                const input = fields[name];
+                const errorEl = errors[name];
+
+                if (message) {
+                    input.classList.add('is-invalid');
+                    input.classList.remove('is-valid');
+                    if (errorEl) errorEl.textContent = message;
+                } else {
+                    input.classList.remove('is-invalid');
+                    if (name !== 'terms') input.classList.add('is-valid');
+                }
+            }
+
+            function validateField(name) {
+                const msg = validators[name]();
+                setFieldState(name, msg);
+                return !msg;
+            }
+
+            // ---------- Индикатор надёжности ----------
+            function calcStrength(pwd) {
+                let score = 0;
+                if (pwd.length >= 8) score++;
+                if (pwd.length >= 12) score++;
+                if (/[a-z]/.test(pwd) && /[A-ZА-Я]/.test(pwd)) score++;
+                if (/\d/.test(pwd)) score++;
+                if (/[^A-Za-zА-Яа-я0-9]/.test(pwd)) score++;
+                return Math.min(score, 4);
+            }
+
+            function updateStrength() {
+                const pwd = fields.password.value;
+                const score = calcStrength(pwd);
+                const colors = ['bg-danger', 'bg-danger', 'bg-warning', 'bg-info', 'bg-success'];
+                const labels = ['Очень слабый', 'Слабый', 'Средний', 'Хороший', 'Надёжный'];
+                const widths = [0, 25, 50, 75, 100];
+
+                strengthBar.className = 'progress-bar ' + colors[score];
+                strengthBar.style.width = widths[score] + '%';
+                strengthText.textContent = pwd
+                    ? 'Надёжность: ' + labels[score]
+                    : 'Минимум 8 символов, буквы и цифры';
+                strengthBar.parentElement.setAttribute('aria-valuenow', score);
+            }
+
+            // ---------- Слушатели ----------
+            ['username', 'email', 'password', 'password2'].forEach(name => {
+                const input = fields[name];
+                input.addEventListener('blur', () => validateField(name));
+                input.addEventListener('input', () => {
+                    if (input.classList.contains('is-invalid')) validateField(name);
+                });
+            });
+
+            
+
+            fields.password.addEventListener('input', () => {
+                updateStrength();
+                // Если пароль уже был проверен — перепроверим совпадение
+                if (fields.password2.value) validateField('password2');
+            });
+
+            // ----- Отправка -----
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+
+                clearNonField();
+
+                const names = ['username', 'email', 'password', 'password2'];
+                const results = names.map(validateField);
+                const firstInvalid = names.find((n, i) => !results[i]);
+
+                if (firstInvalid) {
+                    fields[firstInvalid].focus();
+                    return;
+                }
+
+                submitBtn.disabled = true;
+                submitIcon.classList.add('d-none');
+                submitSpinner.classList.remove('d-none');
+                submitText.textContent = 'Создаём аккаунт…';
+
+                try {
+                    const response = await fetch(form.action, {
+                        method: 'POST',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'X-CSRFToken': form.querySelector('[name=csrfmiddlewaretoken]').value,
+                        },
+                        body: new FormData(form),
+                        credentials: 'same-origin',
+                    });
+
+                    // Если Django сделал обычный redirect — идём по нему
+                    if (response.redirected) {
+                        successAlert.classList.remove('d-none');
+                        successAlert.classList.add('d-flex');
+                        window.location.href = response.url;
+                        return;
+                    }
+
+                    let data = null;
+                    const ct = response.headers.get('content-type') || '';
+                    if (ct.includes('application/json')) {
+                        data = await response.json();
+                    }
+
+                    // Успех
+                    if (response.ok && data && data.ok) {
+                        successAlert.classList.remove('d-none');
+                        successAlert.classList.add('d-flex');
+                        form.classList.add('d-none');
+                        setTimeout(() => {
+                            window.location.href = data.redirect || '/';
+                        }, 800);
+                        return;
+                    }
+
+                    // Ошибки валидации формы
+                    if (data && data.errors) {
+                        // Сбрасываем старые подсветки
+                        names.forEach(n => {
+                            fields[n].classList.remove('is-invalid', 'is-valid');
+                        });
+
+                        let firstKey = null;
+                        Object.entries(data.errors).forEach(([field, list]) => {
+                            const input = fields[field];
+                            const errorEl = errors[field];
+                            if (!input || !errorEl) return;
+
+                            const first = Array.isArray(list) && list[0];
+                            const msg = (first && (first.message || first)) || 'Ошибка.';
+
+                            input.classList.add('is-invalid');
+                            errorEl.textContent = msg;
+
+                            if (!firstKey) firstKey = field;
+                        });
+
+                        if (firstKey && fields[firstKey]) fields[firstKey].focus();
+                        return;
+                    }
+
+                    // Запасной вариант
+                    showNonField('Не удалось создать аккаунт. Попробуйте ещё раз.');
+                } catch (err) {
+                    showNonField('Не удалось связаться с сервером.');
+                } finally {
+                    submitBtn.disabled = false;
+                    submitSpinner.classList.add('d-none');
+                    submitIcon.classList.remove('d-none');
+                    submitText.textContent = 'Зарегистрироваться';
+                }
+            });
+        })();
+    </script>
+</body>
+</html>

@@ -1,0 +1,53 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="ru" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 — Страница не найдена</title>
+    <link href="{% static 'bootstrap-5.3.8-dist/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'bootstrap-5.3.8-dist/font/bootstrap-icons.css' %}" rel="stylesheet">
+</head>
+<body class="bg-body-tertiary">
+
+    <div class="container">
+        <div class="row justify-content-center align-items-center min-vh-100 py-5">
+            <div class="col-12 col-md-8 col-lg-6 text-center">
+
+                <div class="d-inline-flex align-items-center justify-content-center bg-warning bg-opacity-10 text-warning rounded-circle mb-4"
+                     style="width:120px;height:120px;">
+                    <i class="bi bi-compass" style="font-size:3.5rem;"></i>
+                </div>
+
+                <h1 class="display-1 fw-bold text-warning mb-0">404</h1>
+                <h2 class="h3 fw-bold mb-3">Страница не найдена</h2>
+
+                <p class="text-body-secondary mb-4">
+                    Похоже, вы свернули не туда. Страница, которую вы ищете,
+                    была удалена, переименована или никогда не существовала.
+                </p>
+
+                <div class="d-flex flex-column flex-sm-row justify-content-center gap-2">
+                    <a href="/" class="btn btn-primary btn-lg">
+                        <i class="bi bi-house-door me-1"></i>
+                        На главную
+                    </a>
+                    <button type="button" class="btn btn-outline-secondary btn-lg" onclick="history.back()">
+                        <i class="bi bi-arrow-left me-1"></i>
+                        Назад
+                    </button>
+                </div>
+
+                <p class="text-body-secondary small mt-5 mb-0">
+                    Если вы уверены, что страница должна существовать — напишите в
+                    <a href="mailto:support@example.com" class="text-decoration-none">поддержку</a>.
+                </p>
+
+            </div>
+        </div>
+    </div>
+    <script src="{% static 'bootstrap-5.3.8-dist/js/bootstrap.bundle.min.js' %}"></script>
+
+</body>
+</html>
