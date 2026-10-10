@@ -101,9 +101,7 @@ export async function sellCar(car) {
     }
 }
 
-// Путь списания на сервере менялся (SellCar → DeleteCar): сначала пробуем
-// актуальное имя, при «странице не найдено» — старое. Ответ 404 вида
-// «Car not found» — это уже ответ API (машины нет), а не отсутствие эндпоинта.
+
 const SELL_ENDPOINTS = ['/DeleteCar/', '/SellCar/'];
 
 async function requestSell(carId) {

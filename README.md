@@ -3,7 +3,7 @@
 [![docs](https://img.shields.io/badge/docs-online-brightgreen)](https://extasss4106.github.io/electron_desctop_mobile_template/)
 [![GitHub](https://img.shields.io/badge/github-repo-blue?logo=github)](https://github.com/ExtaSsS4106/electron_desctop_mobile_template)
 
-Шаблон кроссплатформенного приложения-«задачника» (Tasker): **одна веб-часть — три платформы** (web в браузере, десктоп через Electron, Android через Capacitor). Веб-часть — SPA на чистом JS: страницы собираются на клиенте из Nunjucks-шаблонов, маршруты живут в адресе после `#`, данные берутся у Django REST API по LAN.
+Десктоп-приложение «Police Department»: **одна веб-часть — три платформы** (web в браузере, десктоп через Electron, Android через Capacitor). Веб-часть — SPA на чистом JS: страницы собираются на клиенте из Nunjucks-шаблонов, маршруты живут в адресе после `#`, данные берутся у Django REST API по LAN. Приложение — учёт автопарка: приём/списание автомобилей, поиск по VIN/модели/году/цвету, список пользователей (для суперпользователя) и профиль.
 
 Документация ниже описывает текущее устройство кода: архитектуру web-клиента, жизненный цикл, контракт с backend, сборку под каждую платформу, диагностику и известные проблемы.
 
@@ -73,10 +73,14 @@
 │   │   ├── conf.js           # API_BASE, REQUEST_TIMEOUT_MS
 │   │   ├── state.js          # data, authReady, authenticated, tokens, токены в хранилище
 │   │   ├── api.js            # apiRequest / authenticatedRequest / refresh / sessionExpired
+│   │   ├── errors.js         # ApiError + flattenMessages (общие для api.js и views)
+│   │   ├── ui.js             # showToast / confirmDialog (тосты и модалка подтверждения)
 │   │   ├── render.js         # render / scheduleRender / redirect / rehydrateScripts
-│   │   └── routing.js        # routes, titles, PUBLIC_ROUTES
+│   │   └── routing.js        # routes, titles, PUBLIC_ROUTES, ADMIN_ROUTES
 │   ├── views/
-│   │   └── auth.js           # login / register / logout / loadProfile / normalizeUser
+│   │   ├── auth.js           # login / register / logout / loadProfile / loadIsAdmin
+│   │   ├── cars.js           # автомобили: загрузка, поиск, приём, списание, рендер списка
+│   │   └── users.js          # пользователи (админ): загрузка, поиск, рендер таблицы
 │   ├── vendor/               # nunjucks.min.js, bootstrap.bundle.min.js (publicDir → dist/)
 │   └── static/
 │       ├── bootstrap-5.3.8-dist/   # CSS, JS, шрифты Bootstrap
@@ -86,9 +90,13 @@
 │
 ├── templates/                # исходники Nunjucks-шаблонов (править ИМЕННО их)
 │   ├── base.html             # навбар + {% block content %}
-│   ├── navbar.html           # шапка: логотип, тема, дропдаун профиля, «Выйти»
-│   ├── home.html             # приветствие
+│   ├── navbar.html           # шапка: логотип, разделы, тема, дропдаун профиля, «Выйти»
+│   ├── home.html             # автопарк: поиск, счётчики, список, модалка приёма автомобиля
+│   ├── users.html            # пользователи (админ): поиск + таблица
 │   ├── profile.html          # карточка пользователя + «Выйти»
+│   ├── components/
+│   │   ├── cars_list.html    # сетка карточек машин (частичный шаблон)
+│   │   └── users_list.html   # таблица пользователей (частичный шаблон)
 │   └── auth/
 │       ├── _layout.html      # центрированная колонка для входа/регистрации
 │       ├── login.html        # форма входа + её инлайн-JS
@@ -96,7 +104,8 @@
 │
 ├── build/
 │   ├── precompile.js         # templates/*.html → www/templates.js
-│   └── smoke-templates.js    # npm test: рендер всех шаблонов тестовым контекстом
+│   ├── smoke-templates.js    # npm test: рендер всех шаблонов тестовым контекстом
+│   └── smoke-runtime.mjs     # npm run test:runtime: исполнение собранного бандла в Node
 │
 ├── android/                  # ⚠️ сгенерирован Capacitor, в git не входит
 ├── dist/                     # ⚠️ результат сборки, в git не входит
@@ -116,8 +125,8 @@
 Единственный реальный HTML-файл. Содержимое по порядку:
 
 - **`<div id="root">`** — сюда рендерятся все страницы. До готовности внутри спиннер «Подключаемся к серверу…», который полностью заменяется первым `render()`.
-- **`<div id="toastHost">`** — контейнер уведомлений, живёт **вне** `#root`, чтобы пережить перерисовку. Сейчас это только разметка: JS-хелпера `showToast()` в коде ещё нет.
-- **`<div id="confirmModal">`** — модалка подтверждения вместо `window.confirm`. Тоже пока только разметка.
+- **`<div id="toastHost">`** — контейнер уведомлений, живёт **вне** `#root`, чтобы пережить перерисовку. Оживлён хелпером `showToast()` из `www/conf/ui.js`.
+- **`<div id="confirmModal">`** — модалка подтверждения вместо `window.confirm`, оживлена `confirmDialog()` из `www/conf/ui.js` (используется при списании автомобиля).
 - **Порядок скриптов важен**:
   ```html
   <script src="nunjucks.min.js"></script>        <!-- обычные скрипты: -->
@@ -271,11 +280,17 @@ index.html загрузился
 | Поле | Кем меняется | Назначение |
 |---|---|---|
 | `appName` | вручную | название проекта: логотип в навбаре и заголовок вкладки |
-| `title` | `render()` | заголовок текущей страницы (`titles[path]`) |
+| `title` / `path` | `render()` | заголовок вкладки и текущий hash-роут (для active-ссылок в навбаре) |
 | `authenticated` | `app.js`, `views/auth.js` | статус сессии для шаблонов |
-| `user` | `views/auth.js` | профиль: `username`, `first_name`, `last_name`, `email`, `date_joined` + вычисляемые `initial`, `initials`, `date_joined_label` |
+| `isAdmin` | `views/auth.js` (`loadIsAdmin`) | суперпользователь: видит раздел «Пользователи» и пункт меню |
+| `user` | `views/auth.js` | профиль: `username`, `first_name`, `last_name`, `email`, `role`, `date_joined` + вычисляемые `initial`, `initials`, `date_joined_label` |
+| `cars` / `allCars` | `views/cars.js` | показываемый (с учётом поиска) и полный список автомобилей |
+| `carsQuery`, `carsLoading`, `carsLoaded`, `carsError` | `views/cars.js` | строка поиска и состояния загрузки списка машин |
+| `users` / `allUsers`, `usersQuery`, `usersLoading`, `usersLoaded`, `usersError` | `views/users.js` | то же самое для списка пользователей |
 
-Поля `initial` / `initials` / `date_joined_label` считает `normalizeUser()` в `www/views/auth.js` — из «сырого» ответа API их взять нельзя, шаблоны рассчитывают именно на них (`{{ user.initial }}` в аватарке навбара, `{{ user.initials }}` в профиле).
+Поля `initial` / `initials` / `date_joined_label` считает `normalizeUser()` в `www/views/auth.js` — из «сырого» ответа API их взять нельзя, шаблоны рассчитывают именно на них (`{{ user.initial }}` в аватарке навбара, `{{ user.initials }}` в профиле). Роль приходит отдельным запросом `GET /api/profile-info/<user_id>/` (в `/profile/` её нет).
+
+Частичные шаблоны (`components/*.html`) перерисовываются точечно: `renderCarsUi()` / `renderUsersUi()` заливают HTML в `#carListWrap` / `#userListWrap` и обновляют счётчики, не трогая остальную страницу — фокус в строке поиска сохраняется.
 
 Переименовывать `appName`, `user`, `authenticated` нельзя — на них завязаны шаблоны и код. Добавлять свои поля можно: они автоматически станут доступны в шаблонах как `{{ myField }}`.
 
@@ -460,11 +475,18 @@ http://<LAN-IP>:8080/api/
 |---|---|---|---|
 | Вход | `POST /login/` | `{username, password}` | `{access, refresh}` |
 | Регистрация | `POST /register/` | `{username, email, first_name, last_name, password, password2}` | `2xx` (дальше идёт авто-вход) |
-| Профиль | `GET /profile/` | `Authorization: Bearer <access>` | `{username, first_name, last_name, email, date_joined, …}` |
+| Профиль | `GET /profile/` | `Authorization: Bearer <access>` | `{id, username, first_name, last_name, email, date_joined}` |
+| Профиль с ролью | `GET /profile-info/<user_id>/` | `Authorization: Bearer …` | `{user_id, profile_id, username, role, email, first_name, last_name, date_joined}` |
+| Админ? | `GET /amisuperuser/` | `Authorization: Bearer …` | `{status_admin: bool}` |
+| Список машин | `GET /GetCars/` | `Authorization: Bearer …` | `[{car_id, vin, model, year, color, status, img, created_at}]` |
+| Поиск машин | `POST /GetCars/` | `{query}` | тот же список, отфильтрованный на сервере (десктоп ищет на клиенте) |
+| Приём автомобиля | `POST /AcceptCar/` | `{vin, model, year?, color?}` | `201 {message}`; `400` при дубле VIN |
+| Списание автомобиля | `POST /DeleteCar/` | `{car_id}` | `200 {message}`; `400`, если уже списана (клиент также пробует старое имя `/SellCar/`) |
+| Пользователи | `GET /all-users/` | `Authorization: Bearer …` | `[{profile_id, username, user_id}]` |
 | Обновление токена | `POST /token/refresh/` | `{refresh}` | `{access, refresh?}` |
-| Выход | `POST /logout/` | `Authorization: Bearer …`, `{refresh_token}` | `2xx` |
+| Выход | `POST /logout/` | `Authorization: Bearer …`, `{refresh_token}` | `205` (нужен `rest_framework_simplejwt.token_blacklist` в `INSTALLED_APPS`) |
 
-Формат ошибок: клиент ожидает DRF — JSON, у которого ошибки могут быть вложены (объект/массив); `flattenMessages()` разворачивает их в строку для алерта. Пустые ответы `204/205` поддерживаются.
+Формат ошибок: клиент ожидает DRF — JSON, у которого ошибки могут быть вложены (объект/массив); `flattenMessages()` (из `www/conf/errors.js`) разворачивает их в строку для алерта. Пустые ответы `204/205` поддерживаются. Обновление токена — single-flight: параллельные запросы при протухшем access делят один `POST /token/refresh/`, иначе второй ушёл бы с уже заблекалистенным refresh.
 
 ---
 
@@ -474,7 +496,7 @@ http://<LAN-IP>:8080/api/
 
 `render()` не был вызван или вышел по guard-у. По порядку:
 
-1. Откройте DevTools и посмотрите Console на ошибки JS (например, `ApiError is not defined` — см. раздел 13).
+1. Откройте DevTools и посмотрите Console на ошибки JS.
 2. Проверьте `window.__debug.isReady()` — если `false`, `initialize()` не дошёл до конца (обычно висящий fetch — смотрите таймауты в Network).
 3. Проверьте `window.__debug.getStartupError()` — там текст сетевой ошибки, он же должен показаться алертом на странице входа.
 4. Убедитесь, что `dist/index.html` существует и собран свежий: `npm run build`.
@@ -517,16 +539,14 @@ adb install -r android/app/build/outputs/apk/debug/app-debug.apk   # тольк�
 
 Список того, что стоит починить/разобрать (по состоянию на текущую версию кода):
 
-1. **`www/conf/api.js` ссылается на несуществующие в своём модуле идентификаторы.** `ApiError`, `flattenMessages` и `redirect` используются, но не импортированы и не объявлены (они остались в `app.js`/`views/auth.js`). Сейчас это проявляется как `ReferenceError: ApiError is not defined` в момент ошибки запроса, вместо аккуратного сообщения на странице входа. Нужно объявить `ApiError`/`flattenMessages` в общем модуле и импортировать `redirect`.
-2. **Мусор в `www/conf/api.js:24`** — «висячий» идентификатор `REQUEST_TIMEOUT_MS` после `const headers = { ...options.headers };`. Не ломает парсинг, но должен быть удалён.
-3. **`electron/preload.js` пробрасывает `findApiBase()`** (канал `api:find-base`), а обработчика в `electron/main.js` для него нет — вызов зареджектится с «No handler registered». Функцию никто не вызывает.
-4. **Мёртвый код автопоиска API** в `electron/main.js`: `getCandidateIPs()`, `probeApi()`, `findApiBase()` (сканирование подсети с дедлайном 4 с) нигде не вызываются — адрес API захардкожен в `www/conf/conf.js`. Либо вернуть вызов, либо удалить.
-5. **Устаревшие упоминания `window.TASKFLOW_API_URL`** — в комментариях `www/conf/conf.js`, `www/index.html` и в `DOCX/index.html`. Фактически адрес задаётся только константой в `www/conf/conf.js`.
-6. **Разметка без логики**: `#toastHost` и `#confirmModal` в `index.html` есть, а JS-хелперов (`showToast()`, `confirmDialog()`) в коде пока нет.
-7. **Пустая/лишняя инфраструктура**: пустая папка `www/modules/` (переехала в `www/conf/`), файл `u2.js` в корне, не подключённый `www/static/style.css` (дублирует назначение `www/styles.css` и `custom/css/app.css`).
-8. **`build/smoke-templates.js` готовит контекст задач** (`tasks`, `stats`, `filters`, `sorts`), хотя соответствующих шаблонов (`partials/stats.html`, `partials/task_list.html`) в проекте уже нет — тест не проверяет их, но данные вводят в заблуждение.
-9. **Безопасность Electron**: `webSecurity: false` (раздел 9) допустим для LAN-шаблона, но не для production.
-10. **Нет unit-тестов** web-части — есть только smoke-тест шаблонов.
+1. **`electron/preload.js` пробрасывает `findApiBase()`** (канал `api:find-base`), а обработчика в `electron/main.js` для него нет — вызов зареджектится с «No handler registered». Функцию никто не вызывает.
+2. **Мёртвый код автопоиска API** в `electron/main.js`: `getCandidateIPs()`, `probeApi()`, `findApiBase()` (сканирование подсети с дедлайном 4 с) нигде не вызываются — адрес API захардкожен в `www/conf/conf.js`. Либо вернуть вызов, либо удалить.
+3. **Пустая/лишняя инфраструктура**: файл `u2.js` в корне, не подключённый `www/static/style.css` (дублирует назначение `www/styles.css` и `custom/css/app.css`).
+4. **Безопасность Electron**: `webSecurity: false` (раздел 9) допустим для LAN-шаблона, но не для production.
+5. **Нет unit-тестов** web-части — есть два смоука: рендер шаблонов (`npm test`) и исполнение собранного бандла в Node (`npm run test:runtime`); сценариев вида «клик → состояние» по-прежнему нет.
+6. **`AllUsers` на сервере доступен без авторизации** (`permission_classes = AllowAny`) — список логинов утекает любому анонимному клиенту. Десктоп показывает его только суперпользователю, но ограничение живёт только на клиенте.
+
+Уже починено в этой версии: `ApiError`/`flattenMessages`/`redirect` в `api.js` (вынесены в `www/conf/errors.js`), «висячий» `REQUEST_TIMEOUT_MS`, хвосты `window.TASKFLOW_API_URL`, разметка `#toastHost`/`#confirmModal` без логики (`www/conf/ui.js`), контекст устаревших задач в `smoke-templates.js`.
 
 ---
 
@@ -541,6 +561,7 @@ adb install -r android/app/build/outputs/apk/debug/app-debug.apk   # тольк�
 | Собрать и запустить десктоп | `npm start` |
 | Запустить Electron вручную | `electron .` (Wayland: `electron --ozone-platform=x11 .`) |
 | Smoke-тест шаблонов | `npm test` |
+| Smoke-тест собранного клиента (логика + контракт API) | `npm run test:runtime` |
 | Синхронизировать Android | `npx cap sync android` |
 | Собрать Android debug APK | `cd android && ./gradlew assembleDebug` |
 | Установить APK на телефон | `adb install -r android/app/build/outputs/apk/debug/app-debug.apk` |

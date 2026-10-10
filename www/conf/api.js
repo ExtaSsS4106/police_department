@@ -62,16 +62,30 @@ export async function apiRequest(path, options = {}, accessToken = '') {
     return body;
 }
 
-export async function refreshTokens() {
-    if (!tokens?.refresh) throw new ApiError('Сессия завершена', 401);
-    const refreshed = await apiRequest('/token/refresh/', {
-        method: 'POST',
-        body: JSON.stringify({ refresh: tokens.refresh }),
+// Обновление токенов — «single-flight»: параллельные запросы (например,
+// loadIsAdmin + loadCars на старте) должны дождаться ОДНОГО refresh'а.
+// Иначе второй запрос уйдёт с уже заблекалистенным refresh-токеном
+// (ROTATE_REFRESH_TOKENS + BLACKLIST_AFTER_ROTATION) и разлогинит пользователя.
+let refreshInFlight = null;
+
+export function refreshTokens() {
+    if (refreshInFlight) return refreshInFlight;
+
+    refreshInFlight = (async () => {
+        if (!tokens?.refresh) throw new ApiError('Сессия завершена', 401);
+        const refreshed = await apiRequest('/token/refresh/', {
+            method: 'POST',
+            body: JSON.stringify({ refresh: tokens.refresh }),
+        });
+        await saveTokens({
+            access: refreshed.access,
+            refresh: refreshed.refresh || tokens.refresh,
+        });
+    })().finally(() => {
+        refreshInFlight = null;
     });
-    await saveTokens({
-        access: refreshed.access,
-        refresh: refreshed.refresh || tokens.refresh,
-    });
+
+    return refreshInFlight;
 }
 
 export async function sessionExpired() {
